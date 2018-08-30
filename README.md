@@ -1,4 +1,4 @@
-<img src="https://www.globalprimepay.com/assets/img/logo-gb-pay.png" width="100" align="left" />
+<img src="https://www.globalprimepay.com/assets/img/logo-gb-pay.png" width="100" align="left" />\
 # GBPrimePay Payment Gateway 
 
 ## Installation
@@ -30,5 +30,5 @@ php bin/magento cache:flush
 ```
 
 #### Step 3 - Config GBPrimePay Payments
-Log into your Magento Admin, 
+Log into your Magento Admin, \
 then goto Stores -> Configuration -> GBPrimePay -> GBPrimePay Payments Settings
