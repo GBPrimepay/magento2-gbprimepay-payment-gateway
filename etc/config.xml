@@ -10,9 +10,9 @@
       <gbprimepay>
           <gbprimepay_required>
             <environment>prelive</environment>
-            <test_public_key>X6n38mW57ejmbJkKqKwffpV2A76cfdCh</test_public_key>
-            <test_secret_key>NVF80S0CFOWO7DPBZ91DPVMP27LB225K</test_secret_key>
-            <test_token_key>SSOLa0u8a0zcerhmus5ORl8XzrnIJVWjeWa80Tr/c0LOdXYEK9aBvUq/KDdk0b/sElbO2LeaycCJwjtBudEcIh/EeMijAMmHgOjJ7hpE9GiRF7nL3zzcSM61qLUeWjzEL6Zp45okv01zYoUfttAR65jJQUg=</test_token_key>
+            <test_public_key></test_public_key>
+            <test_secret_key></test_secret_key>
+            <test_token_key></test_token_key>
             <debug>0</debug>
           </gbprimepay_required>
           <gbprimepay_direct>
