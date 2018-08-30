@@ -1,4 +1,4 @@
-<img src="https://www.globalprimepay.com/assets/img/logo-gb-pay.png" width="200" align="right" />
+<img src="https://www.globalprimepay.com/assets/img/logo-gb-pay.png" width="100" align="left" />
 # GBPrimePay Payment Gateway 
 
 ## Installation
