@@ -29,5 +29,5 @@ php bin/magento cache:flush
 ```
 
 #### Step 3 - Config GBPrimePay Payments
-Log into your Magento Admin, then goto 
+Log into your Magento Admin, then goto  
 Stores -> Configuration -> GBPrimePay -> GBPrimePay Payments Settings
