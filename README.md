@@ -1,4 +1,4 @@
-<img src="https://www.globalprimepay.com/dist/images/logo.svg" width="150" /><br />
+<img src="https://www.globalprimepay.com/dist/images/logo.svg" width="150" /></a>
 
 # GBPrimePay Payment Gateway 
 
