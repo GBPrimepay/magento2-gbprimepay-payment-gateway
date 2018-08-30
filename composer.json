@@ -1,6 +1,6 @@
 {
     "name": "gbprimepay/payments",
-    "description": "N/A",
+    "description": "GBPrimePay Payments for Magento 2",
     "require": {
         "php": "~7.0.2|7.0.4|~7.0.6|~7.1.0"
     },
