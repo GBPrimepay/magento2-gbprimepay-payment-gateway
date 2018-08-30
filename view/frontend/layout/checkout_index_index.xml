@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2018 GBPrimePay Payments.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="checkout.root">
+            <arguments>
+                <argument name="jsLayout" xsi:type="array">
+                    <item name="components" xsi:type="array">
+                        <item name="checkout" xsi:type="array">
+                            <item name="children" xsi:type="array">
+                                <item name="steps" xsi:type="array">
+                                    <item name="children" xsi:type="array">
+                                        <item name="billing-step" xsi:type="array">
+                                            <item name="children" xsi:type="array">
+                                                <item name="payment" xsi:type="array">
+                                                    <item name="children" xsi:type="array">
+                                                        <item name="renders" xsi:type="array">
+                                                            <!-- merge payment method renders here -->
+                                                            <item name="children" xsi:type="array">
+                                                                <item name="gbprimepay_payments" xsi:type="array">
+                                                                    <item name="component" xsi:type="string">GBPrimePay_Payments/js/view/payment/gbprimepay-payments</item>
+                                                                    <item name="methods" xsi:type="array">
+
+                                                                        <item name="gbprimepay_direct" xsi:type="array">
+                                                                            <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
+                                                                        </item>
+
+                                                                        <item name="gbprimepay_qrcode" xsi:type="array">
+                                                                        </item>
+
+                                                                        <item name="gbprimepay_barcode" xsi:type="array">
+                                                                        </item>
+
+                                                                    </item>
+                                                                </item>
+                                                            </item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                            </item>
+                                        </item>
+                                    </item>
+                                </item>
+                            </item>
+                        </item>
+                    </item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+        <referenceContainer name="root">
+            <block class="GBPrimePay\Payments\Block\Checkout\View\Config" template="GBPrimePay_Payments::checkout/view/config.phtml" cacheable="false"/>
+        </referenceContainer>
+    </body>
+</page>

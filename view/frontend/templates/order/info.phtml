@@ -1,0 +1,114 @@
+<?php
+/**
+ * GBPrimePay_Payments extension
+ * @package GBPrimePay_Payments
+ * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ */
+// @codingStandardsIgnoreFile
+?>
+<?php /** @var $block \Magento\Sales\Block\Order\Info */ ?>
+<?php $_order = $block->getOrder();
+$_payment = $_order->getPayment();
+$checkFlag = false;
+if ($_payment->getAdditionalInformation('gbprimepayQrcodeId')) {
+    $dataQrcode = $_payment->getAdditionalInformation();
+    $checkFlag = true;
+}
+?>
+<div class="block block-order-details-view">
+    <div class="block-title">
+        <strong><?php /* @escapeNotVerified */
+            echo __('Order Information') ?></strong>
+    </div>
+    <div class="block-content">
+        <?php if (!$_order->getIsVirtual()): ?>
+            <div class="box box-order-shipping-address">
+                <strong class="box-title"><span><?php /* @escapeNotVerified */
+                        echo __('Shipping Address') ?></span></strong>
+                <div class="box-content">
+                    <address><?php /* @escapeNotVerified */
+                        echo $block->getFormattedAddress($_order->getShippingAddress()); ?></address>
+                </div>
+            </div>
+
+            <div class="box box-order-shipping-method">
+                <strong class="box-title">
+                    <span><?php /* @escapeNotVerified */
+                        echo __('Shipping Method') ?></span>
+                </strong>
+                <div class="box-content">
+                    <?php if ($_order->getShippingDescription()): ?>
+                        <?php echo $block->escapeHtml($_order->getShippingDescription()) ?>
+                    <?php else: ?>
+                        <?php /* @escapeNotVerified */
+                        echo __('No shipping information available'); ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <div class="box box-order-billing-address">
+            <strong class="box-title">
+                <span><?php /* @escapeNotVerified */
+                    echo __('Billing Address') ?></span>
+            </strong>
+            <div class="box-content">
+                <address><?php /* @escapeNotVerified */
+                    echo $block->getFormattedAddress($_order->getBillingAddress()); ?></address>
+            </div>
+        </div>
+        <div class="box box-order-billing-method">
+            <strong class="box-title">
+                <span><?php /* @escapeNotVerified */
+                    echo __('Payment Method') ?></span>
+            </strong>
+            <div class="box-content">
+                <?php echo $block->getPaymentInfoHtml() ?>
+            </div>
+            <?php if ($checkFlag) : ?>
+                <div class="box-content">
+                    <table class="data table">
+                        <tbody>
+                        <tr>
+                            <th>Qrcode Name:</th>
+                            <td>
+                                <?php echo isset($dataQrcode['qrcode_name']) ? $dataQrcode['qrcode_name'] : '' ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Qrcode Account Name</th>
+                            <td>
+                                <?php echo isset($dataQrcode['account_name']) ? $dataQrcode['account_name'] : '' ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Qrcode Account Number</th>
+                            <td>
+                                <?php echo isset($dataQrcode['account_number']) ? $dataQrcode['account_number'] : '' ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Qrcode Routing number</th>
+                            <td>
+                                <?php echo isset($dataQrcode['routing_number']) ? $dataQrcode['routing_number'] : '' ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Account type</th>
+                            <td>
+                                <?php echo isset($dataQrcode['account_type']) ? $dataQrcode['account_type'] : '' ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Holder type</th>
+                            <td>
+                                <?php echo isset($dataQrcode['holder_type']) ? $dataQrcode['holder_type'] : '' ?>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,109 @@
+<?php
+/**
+ * GBPrimePay_Payments extension
+ * @package GBPrimePay_Payments
+ * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ */
+// @codingStandardsIgnoreFile
+?>
+<div class="actions actions-get-auth-token">
+    <div id="auth_token_result_<?php echo $block->getHtmlId() ?>" class="message-validation hide"></div>
+    <button class="action-validate-get-auth-token gbprimepay-button-callback <?php echo $block->getAddClass();?>" type="button" id="<?php echo $block->getHtmlId() ?>">
+        <span id="span-for-active-button"><?php /* @escapeNotVerified */
+            echo $block->escapeHtml($block->getButtonLabel()) ?></span>
+    </button>
+</div>
+<style>
+    .callback-actived {
+        background-color: #004071 !important;
+        border: 1px #004071 solid !important;
+        color: #ffffff !important;
+        /* cursor: default;
+        pointer-events: none; */
+    }
+    .action-validate-get-auth-token{
+        /* cursor: default;
+        pointer-events: none; */
+    }
+</style>
+<script>
+    require(['jquery'], function ($) {
+      $('#active_callback_direct_transaction_button').click(function () {
+              var url = '<?php echo $block->getUrl('gbprimepay/system_config/activeCallbackDirect'); ?>';
+
+              $.ajax({
+                  type: "GET",
+                  url: url,
+                  showLoader: true,
+                  success: function (response) {
+                    // window.console.log(response);
+                      var result_token = $('#auth_token_result_active_callback_direct_transaction_button');
+                      if (response.success) {
+                          $("button#active_callback_direct_transaction_button span#span-for-active-button").html("GBPrimePay Credit Card : Active");
+                          $('button#active_callback_direct_transaction_button button.action-validate-get-auth-token.gbprimepay-button-callback').addClass("callback-actived");
+                          result_token.removeClass('hide').addClass('success');
+                          result_token.html(response.message);
+                      }
+                      if (response.error) {
+                          $("button#active_callback_direct_transaction_button span#span-for-active-button").html("GBPrimePay Credit Card : Error");
+                          result_token.removeClass('hide').addClass('error');
+                          result_token.html(response.message);
+                      }
+                  }
+              });
+          });
+
+        $('#active_callback_qrcode_transaction_button').click(function () {
+                var url = '<?php echo $block->getUrl('gbprimepay/system_config/activeCallbackQrcode'); ?>';
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    showLoader: true,
+                    success: function (response) {
+                      // window.console.log(response);
+                        var result_token = $('#auth_token_result_active_callback_qrcode_transaction_button');
+                        if (response.success) {
+                            $("button#active_callback_qrcode_transaction_button span#span-for-active-button").html("GBPrimePay QR Code : Active");
+                            $('button#active_callback_qrcode_transaction_button button.action-validate-get-auth-token.gbprimepay-button-callback').addClass("callback-actived");
+                            result_token.removeClass('hide').addClass('success');
+                            result_token.html(response.message);
+                        }
+                        if (response.error) {
+                            $("button#active_callback_qrcode_transaction_button span#span-for-active-button").html("GBPrimePay QR Code : Error");
+                            result_token.removeClass('hide').addClass('error');
+                            result_token.html(response.message);
+                        }
+                    }
+                });
+            });
+
+            $('#active_callback_barcode_transaction_button').click(function () {
+                    var url = '<?php echo $block->getUrl('gbprimepay/system_config/activeCallbackQrcode'); ?>';
+
+                    $.ajax({
+                        type: "GET",
+                        url: url,
+                        showLoader: true,
+                        success: function (response) {
+                          // window.console.log(response);
+                            var result_token = $('#auth_token_result_active_callback_barcode_transaction_button');
+                            if (response.success) {
+                                $("button#active_callback_barcode_transaction_button span#span-for-active-button").html("GBPrimePay Barcode : Active");
+                                $('button#active_callback_barcode_transaction_button button.action-validate-get-auth-token.gbprimepay-button-callback').addClass("callback-actived");
+                                result_token.removeClass('hide').addClass('success');
+                                result_token.html(response.message);
+                            }
+                            if (response.error) {
+                                $("button#active_callback_barcode_transaction_button span#span-for-active-button").html("GBPrimePay Barcode : Error");
+                                result_token.removeClass('hide').addClass('error');
+                                result_token.html(response.message);
+                            }
+                        }
+                    });
+                });
+
+
+
+    });
+</script>

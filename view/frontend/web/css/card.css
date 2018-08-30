@@ -1,0 +1,26 @@
+td.active {
+    background-color: #7CFC00;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+td.undefined {
+    background-color: #fa7d3f;
+    color: #000000;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+td.error {
+    background-color: #DC143C;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+}
+
+td.alert{
+    border: 4px red solid!important;
+}
+tbody#card_table_body > tr > td {
+    vertical-align: middle;
+}

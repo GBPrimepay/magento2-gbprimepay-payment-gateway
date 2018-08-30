@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2018 GBPrimePay Payments.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="customer_account"/>
+    <head>
+        <title>GBPrimePay Stored Cards</title>
+        <css src="GBPrimePay_Payments::css/card.css"/>
+        <script src="GBPrimePay_Payments::js/view/customer/card.js"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="GBPrimePay\Payments\Block\Customer\Card" name="customer_card_gbprimepay"
+                   template="GBPrimePay_Payments::customer/card/list.phtml"
+            cacheable = 'false'/>
+        </referenceContainer>
+    </body>
+</page>

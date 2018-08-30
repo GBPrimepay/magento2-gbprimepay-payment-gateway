@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2018 GBPrimePay Payments.
+ */
+-->
+<payment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Magento/Payment/etc/payment.xsd">
+    <groups>
+      <group id="gbprimepay_payments">
+          <label>GBPrimePay</label>
+      </group>
+    </groups>
+    <methods>
+        <method name="gbprimepay_direct">
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
+        <method name="gbprimepay_qrcode">
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
+        <method name="gbprimepay_barcode">
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
+    </methods>
+</payment>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2018 GBPrimePay Payments.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" label="Customer My Account (All Pages)" design_abstraction="custom">
+    <body>
+        <attribute name="class" value="account"/>
+        <referenceBlock name="customer_account_navigation">
+            <block class="Magento\Framework\View\Element\Html\Link\Current" name="gbprimepay-customer-account-navigation-suppport-ticket-link" after="-">
+                <arguments>
+                    <argument name="path" xsi:type="string">gbprimepay/customer/card</argument>
+                    <argument name="label" xsi:type="string">GBPrimePay Store Card</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

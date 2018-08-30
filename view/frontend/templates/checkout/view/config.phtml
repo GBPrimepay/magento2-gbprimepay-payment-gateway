@@ -1,0 +1,59 @@
+<?php
+/**
+ * GBPrimePay_Payments extension
+ * @package GBPrimePay_Payments
+ * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ */
+// @codingStandardsIgnoreFile
+/** @var \GBPrimePay\Payments\Block\Checkout\View\Config $block */
+$configData = $block->getConfigData();
+$isEnableSave = $configData->getIsSave();
+$cards = $block->getDataCard();
+$customerId = $block->customerSession->getCustomerId() ? '1' : '0';
+$baseUrl = $block->getBaseUrl();
+$afterPO = $block->getUrl("gbprimepay/checkout/afterplaceorder");
+$afterQrcode = $block->getUrl("gbprimepay/checkout/eventsqrcode");
+$afterBarcode = $block->getUrl("gbprimepay/checkout/eventsbarcode");
+
+$generateqrcode = $block->getGenerateQrcode();
+$generatebarcode = $block->getGenerateBarcode();
+
+/** @var \Magento\Directory\Model\ResourceModel\Country\Collection $countryCollection */
+$countryCollection = $block->countryFactory->create()->getCollection();
+$countrySel = [];
+foreach($countryCollection as $country) {
+    $name = $block->localeList->getCountryTranslation($country->getData('iso2_code'));
+        if (!empty($name)) {
+                $countrySel[$name] = $country->getData('iso3_code');
+            }
+}
+ksort($countrySel);
+
+?>
+<script>
+    window.gbprimepay = {};
+    window.gbprimepay.baseUrl = '<?php echo $baseUrl; ?>';
+    window.gbprimepay.afterPO = '<?php echo $afterPO; ?>';
+    window.gbprimepay.afterQrcode = '<?php echo $afterQrcode; ?>';
+    window.gbprimepay.afterBarcode = '<?php echo $afterBarcode; ?>';
+    window.gbprimepay.customerLogin = Boolean('<?php echo $customerId; ?>' === "1");
+    window.gbprimepay.titledirect = '<?php echo $configData->getTitleDirect(); ?>';
+    window.gbprimepay.logodirect = '<?php echo $configData->getLogoDirect(); ?>';
+    window.gbprimepay.titleqrcode = '<?php echo $configData->getTitleQrcode(); ?>';
+    window.gbprimepay.titlebarcode = '<?php echo $configData->getTitleBarcode(); ?>';
+    window.gbprimepay.instructiondirect = '<?php echo $configData->getInstructionDirect(); ?>';
+    window.gbprimepay.instructionqrcode = '<?php echo $configData->getInstructionQrcode(); ?>';
+    window.gbprimepay.generateqrcode = '<?php echo $generateqrcode; ?>';
+    window.gbprimepay.instructionbarcode = '<?php echo $configData->getInstructionBarcode(); ?>';
+    window.gbprimepay.generatebarcode = '<?php echo $generatebarcode; ?>';
+    window.gbprimepay.isEnableSave = Boolean('<?php echo $isEnableSave; ?>' === "1");
+    window.gbprimepay.savedCards = [{"id": 0, "last4": "Use other card..."}];
+    window.gbprimepay.jsoncountry = <?php echo json_encode($countrySel); ?>;
+    <?php
+    foreach ($cards as $card) { ?>
+    window.gbprimepay.savedCards.push({
+        "id": "<?php echo $card['id']; ?>",
+        "last4": "<?php echo $card['credit_card_name'] . "      " . $card['expiry_date']; ?>"
+    });
+    <?php } ?>
+</script>

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2018 GBPrimePay Payments.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Config/etc/system_file.xsd">
+  <system>
+    <tab id="gbprimepay" translate="label" sortOrder="400">
+      <label>GBPrimePay</label>
+    </tab>
+
+    <section id="gbprimepay" translate="label" type="text" sortOrder="401" showInDefault="1" showInWebsite="1" showInStore="1">
+      <class>separator-top</class>
+      <label><![CDATA[GBPrimePay Payments Settings]]></label>
+      <tab>gbprimepay</tab>
+      <resource>GBPrimePay_Payments::gbprimepay</resource>
+
+        <group id="brand" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+            <frontend_model>GBPrimePay\Payments\Block\Adminhtml\System\Config\Gbpbrand</frontend_model>
+        </group>
+    
+            <include path="GBPrimePay_Payments::system/gbprimepay_required.xml"/>
+            <include path="GBPrimePay_Payments::system/gbprimepay_direct.xml"/>
+            <include path="GBPrimePay_Payments::system/gbprimepay_qrcode.xml"/>
+            <include path="GBPrimePay_Payments::system/gbprimepay_barcode.xml"/>
+
+    </section>
+
+    </system>
+</config>

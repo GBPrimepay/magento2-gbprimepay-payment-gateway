@@ -1,0 +1,39 @@
+<!--
+/**
+ * Copyright © 2018 GBPrimePay Payments.
+ */
+-->
+<style>
+.qrcode_display {
+
+}
+</style>
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+    <div class="payment-method-title field choice">
+        <input type="radio"
+               name="payment[method]"
+               class="radio"
+               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+        <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitleQrcode()"></span></label>
+    </div>
+    <div class="payment-method-content">
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+        <div class="payment-method-billing-address">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <hr>
+        <div class="qrcode_display" id="qrcode_display"><img data-bind="attr: { src: getQrcode() }"  style="padding:0px 0px 0px 0px;windth:80%;" /></div>
+
+        <p data-bind="html: getInstructionQrcode()"></p>
+
+    </div>
+</div>

@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2018 GBPrimePay Payments.
+ */
+-->
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="gbprimepay_required" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label><![CDATA[GBPrimePay Account Settings]]></label>
+        <attribute type="expanded">1</attribute>
+        <comment>Required Configuration</comment>
+
+
+
+        <field id="environment" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Environment</label>
+            <config_path>gbprimepay/gbprimepay_required/environment</config_path>
+            <source_model>GBPrimePay\Payments\Model\Config\Source\Environment</source_model>
+        </field>
+
+        <field id="live_public_key" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+          <label>Production Public Key</label>
+          <config_path>gbprimepay/gbprimepay_required/live_public_key</config_path>
+        </field>
+
+        <field id="live_secret_key" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+          <label>Production Secret Key</label>
+          <config_path>gbprimepay/gbprimepay_required/live_secret_key</config_path>
+        </field>
+
+        <field id="live_token_key" translate="label" type="textarea" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Production Token</label>
+            <config_path>gbprimepay/gbprimepay_required/live_token_key</config_path>
+        </field>
+
+        <field id="test_public_key" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+          <label>Test Public Key</label>
+          <config_path>gbprimepay/gbprimepay_required/test_public_key</config_path>
+        </field>
+
+        <field id="test_secret_key" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+          <label>Test Secret Key</label>
+          <config_path>gbprimepay/gbprimepay_required/test_secret_key</config_path>
+        </field>
+
+        <field id="test_token_key" translate="label" type="textarea" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Test Token</label>
+            <config_path>gbprimepay/gbprimepay_required/test_token_key</config_path>
+        </field>
+
+        <field id="debug" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+            <label>Enable debug logging</label>
+            <config_path>gbprimepay/gbprimepay_required/debug</config_path>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+        </field>
+
+    </group>
+</include>

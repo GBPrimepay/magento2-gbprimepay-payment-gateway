@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright © 2018 GBPrimePay Payments.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:/Event/etc/events.xsd">
+    <event name="gbprimepay_gen_qrcode">
+        <observer name="gbprimepay_payments_model_observer_requesttransactionqrcode"
+            instance="GBPrimePay\Payments\Model\Observer\RequestTransactionQrcode"/>
+    </event>
+    <event name="gbprimepay_gen_barcode">
+        <observer name="gbprimepay_payments_model_observer_requesttransactionbarcode"
+            instance="GBPrimePay\Payments\Model\Observer\RequestTransactionBarcode"/>
+    </event>
+</config>
