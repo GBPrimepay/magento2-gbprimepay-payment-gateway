@@ -20,11 +20,14 @@ Install GBPrimePay Payments for Magento 2
 
 #### Step 2 -  Enable GBPrimePay Payments
 ```
- php -f bin/magento module:enable --clear-static-content GBPrimePay_Payments
- php -f bin/magento setup:upgrade
- php -f bin/magento setup:static-content:deploy
- php -f bin/magento cache:flush
+php bin/magento module:enable --clear-static-content GBPrimePay_Payments
+php bin/magento setup:upgrade
+php bin/magento setup:static-content:deploy
+php bin/magento setup:static-content:deploy --force
+php bin/magento cache:flush
+
 ```
 
 #### Step 3 - Config GBPrimePay Payments
-Log into your Magento Admin, then goto Stores -> Configuration -> GBPrimePay -> GBPrimePay Payments Settings
+Log into your Magento Admin, 
+then goto Stores -> Configuration -> GBPrimePay -> GBPrimePay Payments Settings
