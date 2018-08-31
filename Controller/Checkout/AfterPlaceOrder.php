@@ -22,14 +22,7 @@ class AfterPlaceOrder extends \GBPrimePay\Payments\Controller\Checkout
     {
         try {
 
-          $this->cancelOrder();
-          $this->checkoutSession->restoreQuote();
 
-          return $this->jsonFactory->create()->setData([
-              'success' => false,
-              'error' => true,
-              'message' => 'cancel'
-          ]);
 if ($this->_config->getCanDebug()) {
 $this->gbprimepayLogger->addDebug("AfterPlaceOrder execute start//");
 }
