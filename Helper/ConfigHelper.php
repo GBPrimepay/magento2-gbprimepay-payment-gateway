@@ -296,7 +296,7 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
 
 
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "token=".$configkey);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "token=".urlencode($configkey));
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLINFO_HEADER_OUT, true);
