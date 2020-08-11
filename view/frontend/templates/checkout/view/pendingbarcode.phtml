@@ -1,0 +1,97 @@
+<?php
+/**
+ * GBPrimePay_Payments extension
+ * @package GBPrimePay_Payments
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
+ */
+// @codingStandardsIgnoreFile
+/** @var \GBPrimePay\Payments\Block\Checkout\View\PendingBarcode $block */
+$configData = $block->getConfigData();
+$isEnableSave = $configData->getIsSave();
+$cards = $block->getDataCard();
+$customerId = $block->customerSession->getCustomerId() ? '1' : '0';
+$baseUrl = $block->getBaseUrl();
+$assignBarcode = $block->getUrl("gbprimepay/checkout/eventsassignbarcode");
+$responseBarcode = $block->getUrl("gbprimepay/checkout/responsebarcode");
+$returnUrlBarcode = $configData->getresponseUrl('response_barcode');
+$transaction = $block->getTransactionBarcode();
+$transaction_id = $block->getTransactionID();
+$transaction_key = $block->getTransactionKEY();
+$_transactionId = $this->getRequest()->getParam('key');
+$_orderId = $this->getRequest()->getParam('id');
+$img_checked = $configData->getImageURLs('checked');
+$img_logopay = $configData->getImageURLs('logopay');
+
+if($transaction['order_complete_barcode'] != 0){
+    echo '<div class="barcode_display" id="gbprimepay-barcode-payment-successful" style="display:block;">';
+    echo '<center><br><br>';
+    echo '<img src="' . $img_checked . '" style="padding:0px 0px 0px 0px;windth:100%;">';
+    echo '<h3>GBPrimePay Bill Payment Payment Successful!</h3>';
+    echo '<img src="' . $img_logopay . '" style="padding:0px 0px 0px 0px;windth:100%;">';
+    echo '<br><br><br>';
+    echo 'Pay with Bill Payment Payment has been received and "Order is Now Complete".';
+    echo '<br><br><br>';
+    echo 'Redirecting...';
+    echo '<br><br><br><br><br><br>';
+    echo '</center>';
+    echo '</div>';
+?>
+<script>
+require([
+    'jquery',
+    'jquery/ui',
+    'domReady!'
+], function($){
+    'use strict';
+    setInterval(function(){get_return_url($);},10000);
+});
+function get_return_url($){
+window.location.href = '<?php echo $returnUrlBarcode; ?>';
+}
+</script>
+<?php
+}else{
+    echo '<div class="barcode_display" id="gbprimepay-barcode-waiting-payment" style="display:block;">';
+    echo '<center>';
+    echo '<object width="100%" height="100%" data="' . $transaction['order_generate_barcode'] . '" type="application/pdf" class="internal" style="min-height: 730px;"><embed src="' . $transaction['order_generate_barcode'] . '" type="application/pdf" style="min-height: 730px;"/></object>';
+    echo '<br><br>';
+    echo '</center>';
+    echo '</div>';
+?>
+<script>
+require([
+    'jquery',
+    'jquery/ui',
+    'domReady!'
+], function($){
+    'use strict';
+    get_ajax_transaction($);
+    setInterval(function(){get_ajax_transaction($);},5000);
+});
+function get_ajax_transaction($){
+var urlresponseBarcode = '<?php echo $responseBarcode; ?>';
+var idBarcode = '<?php echo $_orderId; ?>';
+var keyBarcode = '<?php echo $_transactionId; ?>';
+$.ajax({
+    type: 'POST',
+    url: urlresponseBarcode,
+    dataType: "json",
+    cache: false,
+    data: {
+        id: idBarcode,
+        key: keyBarcode
+    },
+    success: function (response) {
+        if (response.success) {
+            if (response.gbp_reference_no) {
+                window.location = window.location.pathname;
+            }
+        }
+    },
+    error: function (response) {}
+});
+}
+</script>
+<?php
+}
+?>

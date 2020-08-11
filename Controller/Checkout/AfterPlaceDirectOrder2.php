@@ -2,14 +2,14 @@
 /**
  * GBPrimePay_Payments extension
  * @package GBPrimePay_Payments
- * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
  */
 
 namespace GBPrimePay\Payments\Controller\Checkout;
 
 use Magento\Framework\App\ResponseInterface;
 
-class AfterPlaceOrder extends \GBPrimePay\Payments\Controller\Checkout
+class AfterPlaceDirectOrder extends \GBPrimePay\Payments\Controller\Checkout
 {
 
     /**
@@ -22,36 +22,28 @@ class AfterPlaceOrder extends \GBPrimePay\Payments\Controller\Checkout
     {
         try {
 
-
 if ($this->_config->getCanDebug()) {
-$this->gbprimepayLogger->addDebug("AfterPlaceOrder execute start//");
+$this->gbprimepayLogger->addDebug("AfterPlaceDirectOrder execute start//");
 }
+
             $result = $this->jsonFactory->create();
             if ($this->getRequest()->isAjax()) {
                 $order = $this->checkoutSession->getLastRealOrder();
                 $payment = $order->getPayment();
-                $capture = $this->gbprimepayDirect->_capture($order->getPayment(), $order->getBaseGrandTotal());
-                if ($capture['id']) {
-                    $payment->setAdditionalInformation('id', $capture['id']);
-                    if ($capture['resultCode'] === '00') {
-                        $order->setCanSendNewEmailFlag(true);
-                        $this->sendEmailCustomer($order);
-                        $invoice = $order->prepareInvoice();
-                        $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
-                        $invoice->register();
-                        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-                        $transaction = $objectManager->create('\\Magento\\Framework\\DB\\Transaction');
-                        $transaction->addObject($invoice)
-                            ->addObject($invoice->getOrder())
-                            ->save();
+                $secured = $this->gbprimepayDirect->_secured($order->getPayment(), $order->getBaseGrandTotal());
+                if ($secured['id']) {
+                    $payment->setAdditionalInformation('id', $secured['id']);
+                    if ($secured['resultCode'] === '00') {
+                      if (!empty($callback['gbpReferenceNo']) && ($otpCode == 'Y')) {
 
-                        $invoiceSender = $objectManager->create('\Magento\Sales\Model\Order\Email\Sender\InvoiceSender');
-                        $invoiceSender->send($invoice);
-                        $order->addStatusHistoryComment(
-                            __('Notified customer about invoice #%1.', $invoice->getId())
-                        )
-                            ->setIsCustomerNotified(true);
-                        $order->save();
+                        // $account_settings = get_option('gbprimepay_account_settings');
+  
+                        // $otp_url = gbp_instances('URL_3D_SECURE_LIVE');
+                        // $otp_publicKey = $account_settings['live_public_key'];
+                        // $otp_gbpReferenceNo = $callback['gbpReferenceNo'];
+  
+  
+                      }
 
                         return $result->setData([
                             'success' => true
@@ -67,7 +59,7 @@ $this->gbprimepayLogger->addDebug("AfterPlaceOrder execute start//");
                     }
                 } else {
                     if ($this->_config->getCanDebug()) {
-                        $this->gbprimepayLogger->addDebug("afterPO//");
+                        $this->gbprimepayLogger->addDebug("AfterPlaceDirectOrder error//");
                     }
 
                     return $result->setData([
@@ -79,7 +71,7 @@ $this->gbprimepayLogger->addDebug("AfterPlaceOrder execute start//");
             }
         } catch (\Exception $exception) {
             if ($this->_config->getCanDebug()) {
-                $this->gbprimepayLogger->addDebug("after PO //" . $exception->getMessage());
+                $this->gbprimepayLogger->addDebug("AfterPlaceDirectOrder error//" . $exception->getMessage());
             }
             $this->cancelOrder();
             $this->checkoutSession->restoreQuote();

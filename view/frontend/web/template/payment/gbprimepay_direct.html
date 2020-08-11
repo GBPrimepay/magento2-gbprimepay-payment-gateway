@@ -1,8 +1,16 @@
 <!--
 /**
- * Copyright © 2018 GBPrimePay Payments.
+ * Copyright © 2020 GBPrimePay Payments.
  */
 -->
+<style>
+.payment-method {
+  border-bottom: 1px solid #cccccc;
+}
+.payment-method:last-child {
+  border-bottom: 0px solid #cccccc;
+}
+</style>
 <div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
     <div class="payment-method-title field choice">
 
@@ -35,13 +43,34 @@
                                 ">
         </select>
         <!-- /ko -->
-        <br>
-        <hr>
         <form class="form" data-bind="attr: {'id': getCode() + '-form'}, visible: isFormVisible">
             <label data-bind="attr: {for: getCode() + '-card-id'}" class="label">
                 <h2><!-- ko text: $t('Payment Information')--><!-- /ko --></h2>
             </label>
             <!-- ko template: 'GBPrimePay_Payments/payment/cc-form' --><!-- /ko -->
+            
+          <div class="field type" style="display:none;">
+            <div class="control">
+                <input type="text"
+                       name="payment[transaction_id]"
+                       class="input-text"
+                       value=""
+                       data-bind="attr: {id: getCode() + '_transaction_id', 'data-container': getCode() + '-transaction-id'},
+                       value: getTransactionID()
+                       ">
+            </div>
+        </div>
+        <div class="field type" style="display:none;">
+          <div class="control">
+              <input type="text"
+                     name="payment[transaction_key]"
+                     class="input-text"
+                     value=""
+                     data-bind="attr: {id: getCode() + '_transaction_key', 'data-container': getCode() + '-transaction-key'},
+                     value: getTransactionKEY()
+                     ">
+          </div>
+      </div>
         </form>
         <p data-bind="html: getInstructionDirect()"></p>
         <div class="checkout-agreements-block">

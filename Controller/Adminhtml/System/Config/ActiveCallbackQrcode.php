@@ -2,7 +2,7 @@
 /**
  * GBPrimePay_Payments extension
  * @package GBPrimePay_Payments
- * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
  */
 
 namespace GBPrimePay\Payments\Controller\Adminhtml\System\Config;
@@ -151,6 +151,7 @@ class ActiveCallbackQrcode extends Action
             $url = Constant::URL_CHECKPUBLICKEY_LIVE;
         }
         $callback = $this->_config->sendPublicCurl("$url", [], 'GET');
+
             if (!empty($callback['merchantId']) && !empty($callback['initialShop']) && !empty($callback['merchantName'])) {
                     if ($this->_config->getEnvironment() === 'prelive') {
                         $url = Constant::URL_CHECKPRIVATEKEY_TEST;

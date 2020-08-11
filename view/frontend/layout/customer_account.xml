@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
-/**
- * Copyright © 2018 GBPrimePay Payments.
+/*
+ * Copyright © 2020 GBPrimePay Payments.
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" label="Customer My Account (All Pages)" design_abstraction="custom">

@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <!--
-/**
- * Copyright © 2018 GBPrimePay Payments.
+/*
+ * Copyright © 2020 GBPrimePay Payments.
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <head>
+        <script src="GBPrimePay_Payments::js/view/payment/gbprimepay-vendors.js"/>
+    </head>
     <body>
         <referenceBlock name="checkout.root">
             <arguments>
@@ -29,7 +32,13 @@
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
                                                                         </item>
 
+                                                                        <item name="gbprimepay_installment" xsi:type="array">
+                                                                        </item>
+
                                                                         <item name="gbprimepay_qrcode" xsi:type="array">
+                                                                        </item>
+
+                                                                        <item name="gbprimepay_qrcredit" xsi:type="array">
                                                                         </item>
 
                                                                         <item name="gbprimepay_barcode" xsi:type="array">

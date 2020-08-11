@@ -2,12 +2,14 @@
 /**
  * GBPrimePay_Payments extension
  * @package GBPrimePay_Payments
- * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
  */
 
 namespace GBPrimePay\Payments\Model;
 
+use GBPrimePay\Payments\Model\GBPrimePayInstallment;
 use GBPrimePay\Payments\Model\GBPrimePayQrcode;
+use GBPrimePay\Payments\Model\GBPrimePayQrcredit;
 use GBPrimePay\Payments\Model\GBPrimePayBarcode;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Framework\Escaper;
@@ -17,7 +19,9 @@ class ConfigProvider implements ConfigProviderInterface
 {
     protected $methodCodes = [
         GBPrimePayDirect::CODE,
+        GBPrimePayInstallment::CODE,
         GBPrimePayQrcode::CODE,
+        GBPrimePayQrcredit::CODE,
         GBPrimePayBarcode::CODE
     ];
 

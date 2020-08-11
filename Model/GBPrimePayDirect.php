@@ -2,15 +2,18 @@
 /**
  * GBPrimePay_Payments extension
  * @package GBPrimePay_Payments
- * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
  */
 
 namespace GBPrimePay\Payments\Model;
 
-use Magento\Payment\Model\Method\AbstractMethod;
-use Magento\Sales\Model\Order;
 use Magento\Framework\Exception\CouldNotSaveException;
-use GBPrimePay\Payments\Helper\Constant as Constant;
+use Magento\Payment\Model\Method\AbstractMethod;
+use Magento\Payment\Model\Method\ConfigInterfaceFactory;
+use Magento\Sales\Api\Data\OrderPaymentInterface;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Email\Sender\OrderSender;
+use GBPrimePay\Payments\Helper\Constant;
 
 class GBPrimePayDirect extends \Magento\Payment\Model\Method\Cc
 {
@@ -37,6 +40,8 @@ class GBPrimePayDirect extends \Magento\Payment\Model\Method\Cc
     protected $_config;
     protected $customerFactory;
     protected $cardFactory;
+    protected $checkoutRegistry;
+    protected $purchaseFactory;
     protected $gbprimepayLogger;
 
     public function __construct(
@@ -44,21 +49,28 @@ class GBPrimePayDirect extends \Magento\Payment\Model\Method\Cc
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
         \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
-        \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Framework\Registry $checkoutRegistry,
+        \Magento\Backend\Model\Auth\Session $backendAuthSession,
+        \Magento\Backend\Model\Session\Quote $sessionQuote,
         \Magento\Customer\Model\Session $customerSession,
+        \Magento\Payment\Model\Method\Logger $logger,
+        \Magento\Payment\Helper\Data $paymentData,
+        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
+        \Magento\Quote\Api\CartManagementInterface $quoteManagement,
+        \Magento\Checkout\Helper\Data $checkoutData,
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \GBPrimePay\Payments\Helper\ConfigHelper $configHelper,
         \GBPrimePay\Payments\Model\CustomerFactory $customerFactory,
         \GBPrimePay\Payments\Model\CardFactory $cardFactory,
+        \GBPrimePay\Payments\Model\PurchaseFactory $purchaseFactory,
         \GBPrimePay\Payments\Logger\Logger $gbprimepayLogger,
         array $data = []
     ) {
-
         $this->gbprimepayLogger = $gbprimepayLogger;
         $this->_config = $configHelper;
         $this->cardFactory = $cardFactory;
@@ -66,9 +78,18 @@ class GBPrimePayDirect extends \Magento\Payment\Model\Method\Cc
         $this->customerSession = $customerSession;
         $this->checkoutSession = $checkoutSession;
         $this->_messageManager = $messageManager;
+        $this->backendAuthSession = $backendAuthSession;
+        $this->sessionQuote = $sessionQuote;
+        $this->checkoutRegistry = $checkoutRegistry;
+        $this->quoteRepository = $quoteRepository;
+        $this->quoteManagement = $quoteManagement;
+        $this->checkoutData = $checkoutData;
+        $this->purchaseFactory = $purchaseFactory;
+        $this->storeManager = $storeManager;
+
         parent::__construct(
             $context,
-            $registry,
+            $checkoutRegistry,
             $extensionFactory,
             $customAttributeFactory,
             $paymentData,
@@ -81,36 +102,22 @@ class GBPrimePayDirect extends \Magento\Payment\Model\Method\Cc
             $data
         );
     }
-
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         return AbstractMethod::isAvailable($quote);
     }
-
     public function validate()
     {
         return AbstractMethod::validate();
     }
-
     public function initialize($paymentAction, $stateObject)
     {
         try {
-
-
             $payment = $this->getInfoInstance();
-            /**
-             * @var \Magento\Sales\Model\Order $order
-             */
             $order = $payment->getOrder();
             $order->setCanSendNewEmailFlag(false);
+            $order->setCustomerNoteNotify(false);
             $amount = $order->getBaseGrandTotal();
-// $orderId = $order->getIncrementId();
-// if ($this->_config->getCanDebug()) {
-// $this->gbprimepayLogger->addDebug("orderId //" . print_r($orderId, true));
-// }
-            /**
-             * @var \Magento\Sales\Model\Order $order
-             */
             $order = $payment->getOrder();
             $customer_id = $order->getCustomerId();
             $customerModel = $this->customerFactory->create()
@@ -127,34 +134,26 @@ class GBPrimePayDirect extends \Magento\Payment\Model\Method\Cc
 
             $tokenid = $payment->getAdditionalInformation('tokenid');
             if ($tokenid && $tokenid !== "0") {
-
-
                 $cardModel = $this->cardFactory->create()
                     ->getCollection()
                     ->addFieldToFilter("id", $tokenid)
                     ->getFirstItem();
                 $gbprimepayCardId = $cardModel->getData("tokenid");
                 $payment->setAdditionalInformation("gbprimepayCardId", $gbprimepayCardId);
-
-
-
-
-
                 $card = $this->_loadCard($payment, $gbprimepayCardId);
-
                 $gbprimepayCardId = $card['id'];
                 $payment->setAdditionalInformation("gbprimepayCardId", $gbprimepayCardId);
-
             } else {
-
                 $card = $this->_createCard($payment, $gbprimepayCustomerId);
                 $gbprimepayCardId = $card['id'];
                 $payment->setAdditionalInformation("gbprimepayCardId", $gbprimepayCardId);
             }
-            $order->addStatusHistoryComment(__('Your order was on pending state!'));
-            $stateObject->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
+            $stateObject->setState(\Magento\Sales\Model\Order::STATE_NEW);
             $stateObject->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
-            $stateObject->setIsNotified(false);
+            $stateObject->setIsNotified(false); 
+            $stateObject->setCanSendNewEmailFlag(false); 
+            $stateObject->setIsCustomerNotified(false); 
+            $stateObject->setIsNotified(false); 
         } catch (\Exception $exception) {
             throw new \Exception($exception->getMessage());
         }
@@ -162,21 +161,27 @@ class GBPrimePayDirect extends \Magento\Payment\Model\Method\Cc
 
     public function assignData(\Magento\Framework\DataObject $data)
     {
-
         $infoInstance = $this->getInfoInstance();
         $_tmpData = $data->_data;
         $additionalDataRef = $_tmpData['additional_data'];
         $tokenid = isset($additionalDataRef['tokenid']) ? $additionalDataRef['tokenid'] : "";
         $isSave = isset($additionalDataRef['isSave']) ? $additionalDataRef['isSave'] : "";
         $ccnb = isset($additionalDataRef['cc_number']) ? $additionalDataRef['cc_number'] : "";
+        $transaction_id = isset($additionalDataRef['transaction_id']) ? $additionalDataRef['transaction_id'] : "";
         $infoInstance->setAdditionalInformation('data', json_encode($additionalDataRef));
         $infoInstance->setAdditionalInformation('isSave', $isSave);
         $infoInstance->setAdditionalInformation('tokenid', $tokenid);
+        $infoInstance->setAdditionalInformation('transaction_id', $transaction_id);
+        return $this;
     }
 
+    public function _assignData($post)
+    {
+        return $this;
+    }
     public function getConfigPaymentAction()
     {
-        return AbstractMethod::ACTION_AUTHORIZE_CAPTURE;
+        return $this::ACTION_AUTHORIZE_CAPTURE;
     }
 
 
@@ -446,6 +451,117 @@ $getgbprimepay_customer_id= $payment->getAdditionalInformation('gbprimepay_custo
             );
         }
     }
+    
+
+    /**
+     * @param \Magento\Payment\Model\InfoInterface|\Magento\Sales\Model\Order\Payment $payment
+     */
+    public function _secured($payment, $amount)
+    {
+        try {
+$gbprimepayCardId = $payment->getAdditionalInformation('gbprimepayCardId');
+$order = $payment->getOrder();
+
+$customer_full_name = $order->getBillingAddress()->getFirstname() . ' ' . $order->getBillingAddress()->getLastname();
+$callgetMerchantId = $this->_config->getMerchantId();
+$callgenerateID = $this->_config->generateID();
+
+$_orderId = $order->getEntityId();
+$_incrementId = $order->getIncrementId();
+$itemamount = number_format((($amount * 100)/100), 2, '.', '');
+$itemdetail = 'Charge for order ' . $_incrementId;
+$itemReferenceId = ''.substr(time(), 4, 5).'00'.$_orderId;
+$itemcustomerEmail = $order->getCustomerEmail();
+$itemmagento_customer_id = $payment->getOrder()->getCustomerId();
+$otpCode = 'Y';
+$otpResponseUrl = $this->_config->getresponseUrl('response_direct');
+$otpBackgroundUrl = $this->_config->getresponseUrl('background_direct');
+
+if ($this->_config->getEnvironment() === 'prelive') {
+    $url = Constant::URL_CHARGE_TEST;
+} else {
+    $url = Constant::URL_CHARGE_LIVE;
+}
+
+$field = "{\r\n\"amount\": $itemamount,\r\n\"referenceNo\": \"$itemReferenceId\",\r\n\"detail\": \"$itemdetail\",\r\n\"customerName\": \"$customer_full_name\",\r\n\"customerEmail\": \"$itemcustomerEmail\",\r\n\"merchantDefined1\": \"$callgenerateID\",\r\n\"merchantDefined2\": null,\r\n\"merchantDefined3\": \"$itemReferenceId\",\r\n\"merchantDefined4\": null,\r\n\"merchantDefined5\": null,\r\n\"card\": {\r\n\"token\": \"$gbprimepayCardId\"\r\n},\r\n\"otp\": \"$otpCode\",\r\n\"responseUrl\": \"$otpResponseUrl\",\r\n\"backgroundUrl\": \"$otpBackgroundUrl\"\r\n}\r\n";
+
+
+$callback = $this->_config->sendCHARGECurl("$url", $field, 'POST');
+
+
+if ($callback['resultCode']=="00") {
+    $isLogin = $this->customerSession->isLoggedIn();
+    if ($isLogin) {
+        $cardModel = $this->cardFactory->create();
+        $getcardDataSave= $payment->getAdditionalInformation('cardDataSave');
+        if($getcardDataSave){
+            $cardModel->setData($getcardDataSave);
+            $cardModel->save();
+        }
+    }
+}
+$getgbprimepay_customer_id= $payment->getAdditionalInformation('gbprimepay_customer_id');
+
+$gbpReferenceNo_action = isset($callback['gbpReferenceNo']) ? $callback['gbpReferenceNo'] : '';
+    if($gbpReferenceNo_action==true){
+      $callbackgbpReferenceNo = $callback['gbpReferenceNo'];
+    }else{
+      $callbackgbpReferenceNo = '';
+    }
+
+$item = array(
+    "id" => $callgenerateID,
+    "tokenreference" => $gbprimepayCardId,
+    "resultCode" => $callback['resultCode'],
+    "amount" => $itemamount,
+    "referenceNo" => $itemReferenceId,
+    "gbpReferenceNo" => $callbackgbpReferenceNo,
+    "detail" => $itemdetail,
+    "customerName" => $customer_full_name,
+    "customerEmail" => $itemcustomerEmail,
+    "merchantDefined1" => $callgenerateID,
+    "merchantDefined2" => null,
+    "merchantDefined3" => $itemReferenceId,
+    "merchantDefined4" => null,
+    "merchantDefined5" => null,
+    "related" => array(
+                    "self" => "$getgbprimepay_customer_id",
+                    "buyers" => "$callgetMerchantId",
+                ),
+    "links" => array(
+                    "self" => "/charges/$callgenerateID",
+                    "buyers" => "/charges/$callgenerateID/buyers",
+                    "sellers" => "/charges/$callgenerateID/sellers",
+                    "status" => "/charges/$callgenerateID/status",
+                    "fees" => "/charges/$callgenerateID/fees",
+                    "transactions" => "/charges/$callgenerateID/transactions",
+                    "batch_transactions" => "/charges/$callgenerateID/batch_transactions",
+                    ),
+);
+
+            if ($item['tokenreference']) {
+                if ($callback['resultCode'] === '00') {
+                    return $item;
+                } else {
+                    throw new CouldNotSaveException(
+                        __('Something went wrong. Please try again!')
+                    );
+                }
+            } else {
+                throw new CouldNotSaveException(
+                    __('Something went wrong. Please try again!')
+                );
+            }
+        } catch (\Exception $exception) {
+            if ($this->_config->getCanDebug()) {
+                $this->gbprimepayLogger->addDebug("cap auth //" . $exception->getMessage());
+            }
+
+            throw new \Exception(
+                $exception->getMessage()
+            );
+        }
+    }
 
     /**
      * @param \Magento\Payment\Model\InfoInterface|\Magento\Sales\Model\Order\Payment $payment
@@ -453,94 +569,80 @@ $getgbprimepay_customer_id= $payment->getAdditionalInformation('gbprimepay_custo
     public function _capture($payment, $amount)
     {
         try {
-            $gbprimepayCardId = $payment->getAdditionalInformation('gbprimepayCardId');
-            $order = $payment->getOrder();
-
-
-
+$gbprimepayCardId = $payment->getAdditionalInformation('gbprimepayCardId');
+$order = $payment->getOrder();
 
 $customer_full_name = $order->getBillingAddress()->getFirstname() . ' ' . $order->getBillingAddress()->getLastname();
-
 $callgetMerchantId = $this->_config->getMerchantId();
 $callgenerateID = $this->_config->generateID();
 
 $itemamount = number_format((($amount * 100)/100), 2, '.', '');
-$itemdetail = $order->getIncrementId();
+$itemdetail = 'Charge for order ' . $order->getEntityId();
+$itemReferenceId = ''.substr(time(), 4, 5).'00'.$order->getIncrementId();
 $itemcustomerEmail = $order->getCustomerEmail();
 $itemmagento_customer_id = $payment->getOrder()->getCustomerId();
+$otpCode = 'Y';
+$otpResponseUrl = $this->_config->getresponseUrl('response_direct');
+$otpBackgroundUrl = $this->_config->getresponseUrl('background_direct');
 
+if ($this->_config->getEnvironment() === 'prelive') {
+    $url = Constant::URL_CHARGE_TEST;
+} else {
+    $url = Constant::URL_CHARGE_LIVE;
+}
 
-  if ($this->_config->getEnvironment() === 'prelive') {
-      $url = Constant::URL_CHARGE_TEST;
-  } else {
-      $url = Constant::URL_CHARGE_LIVE;
-  }
+$field = "{\r\n\"amount\": $itemamount,\r\n\"referenceNo\": \"$itemReferenceId\",\r\n\"detail\": \"$itemdetail\",\r\n\"customerName\": \"$customer_full_name\",\r\n\"customerEmail\": \"$itemcustomerEmail\",\r\n\"merchantDefined1\": \"$callgenerateID\",\r\n\"merchantDefined2\": null,\r\n\"merchantDefined3\": \"$itemReferenceId\",\r\n\"merchantDefined4\": null,\r\n\"merchantDefined5\": null,\r\n\"card\": {\r\n\"token\": \"$gbprimepayCardId\"\r\n},\r\n\"otp\": \"$otpCode\",\r\n\"responseUrl\": \"$otpResponseUrl\",\r\n\"backgroundUrl\": \"$otpBackgroundUrl\"\r\n}\r\n";
 
+// if ($this->_config->getCanDebug()) {
+//     $this->gbprimepayLogger->addDebug("Debug field //" . print_r($field, true));
+// }
 
+$callback = $this->_config->sendCHARGECurl("$url", $field, 'POST');
 
+if ($this->_config->getCanDebug()) {
+    $this->gbprimepayLogger->addDebug("Debug sendCHARGECurl callback //" . print_r($callback, true));
+}
 
-
-  $field = "{\r\n\"amount\": $itemamount,\r\n\"referenceNo\": \"$callgetMerchantId\",\r\n\"detail\": \"$itemdetail\",\r\n\"customerName\": \"$customer_full_name\",\r\n\"customerEmail\": \"$itemcustomerEmail\",\r\n\"merchantDefined1\": \"$callgenerateID\",\r\n\"merchantDefined2\": null,\r\n\"merchantDefined3\": null,\r\n\"merchantDefined4\": null,\r\n\"merchantDefined5\": null,\r\n\"card\": {\r\n\"token\": \"$gbprimepayCardId\"\r\n}\r\n}\r\n";
-
-
-
-
-
-  $callback = $this->_config->sendCHARGECurl("$url", $field, 'POST');
-
-
-
-
-
-            if ($callback['resultCode']=="00") {
-
-                        $isLogin = $this->customerSession->isLoggedIn();
-                        if ($isLogin) {
-                            $cardModel = $this->cardFactory->create();
-                            $getcardDataSave= $payment->getAdditionalInformation('cardDataSave');
-                            if($getcardDataSave){
-
-                              $cardModel->setData($getcardDataSave);
-                              $cardModel->save();
-
-                            }
-                        }
-
-
-      }
-
-
-
-      $getgbprimepay_customer_id= $payment->getAdditionalInformation('gbprimepay_customer_id');
-
-   $item = array(
-       "id" => $callgenerateID,
-       "tokenreference" => $gbprimepayCardId,
-       "resultCode" => $callback['resultCode'],
-       "amount" => $itemamount,
-       "referenceNo" => $callgetMerchantId,
-       "detail" => $itemdetail,
-       "customerName" => $customer_full_name,
-       "customerEmail" => $itemcustomerEmail,
-       "merchantDefined1" => $callgenerateID,
-       "merchantDefined2" => null,
-       "merchantDefined3" => null,
-       "merchantDefined4" => null,
-       "merchantDefined5" => null,
-        "related" => array(
-                       "self" => "$getgbprimepay_customer_id",
-                       "buyers" => "$callgetMerchantId",
+if ($callback['resultCode']=="00") {
+    $isLogin = $this->customerSession->isLoggedIn();
+    if ($isLogin) {
+        $cardModel = $this->cardFactory->create();
+        $getcardDataSave= $payment->getAdditionalInformation('cardDataSave');
+        if($getcardDataSave){
+            $cardModel->setData($getcardDataSave);
+            $cardModel->save();
+        }
+    }
+}
+$getgbprimepay_customer_id= $payment->getAdditionalInformation('gbprimepay_customer_id');
+$item = array(
+    "id" => $callgenerateID,
+    "tokenreference" => $gbprimepayCardId,
+    "resultCode" => $callback['resultCode'],
+    "amount" => $itemamount,
+    "referenceNo" => $itemReferenceId,
+    "detail" => $itemdetail,
+    "customerName" => $customer_full_name,
+    "customerEmail" => $itemcustomerEmail,
+    "merchantDefined1" => $callgenerateID,
+    "merchantDefined2" => null,
+    "merchantDefined3" => $itemReferenceId,
+    "merchantDefined4" => null,
+    "merchantDefined5" => null,
+    "related" => array(
+                    "self" => "$getgbprimepay_customer_id",
+                    "buyers" => "$callgetMerchantId",
+                ),
+    "links" => array(
+                    "self" => "/charges/$callgenerateID",
+                    "buyers" => "/charges/$callgenerateID/buyers",
+                    "sellers" => "/charges/$callgenerateID/sellers",
+                    "status" => "/charges/$callgenerateID/status",
+                    "fees" => "/charges/$callgenerateID/fees",
+                    "transactions" => "/charges/$callgenerateID/transactions",
+                    "batch_transactions" => "/charges/$callgenerateID/batch_transactions",
                     ),
-        "links" => array(
-                        "self" => "/charges/$callgenerateID",
-                        "buyers" => "/charges/$callgenerateID/buyers",
-                        "sellers" => "/charges/$callgenerateID/sellers",
-                        "status" => "/charges/$callgenerateID/status",
-                        "fees" => "/charges/$callgenerateID/fees",
-                        "transactions" => "/charges/$callgenerateID/transactions",
-                        "batch_transactions" => "/charges/$callgenerateID/batch_transactions",
-                      ),
-   );
+);
 
             if ($item['tokenreference']) {
                 if ($callback['resultCode'] === '00') {
@@ -608,5 +710,67 @@ $itemmagento_customer_id = $payment->getOrder()->getCustomerId();
         \Magento\Payment\Model\InfoInterface $payment
     ) {
         throw new \Magento\Framework\Exception\LocalizedException(__('The Cancel action is not available.'));
+    }
+
+    public function _purchaseData($purchase)
+    {
+    $filterpurchase = [];
+    $customer_id = $purchase['id_customer'];
+    $quote_id = $purchase['quoteid'];
+    $filterpurchase = $this->purchaseFactory->create()
+        ->getCollection()
+        ->addFieldToFilter("magento_customer_id", $customer_id)
+        ->addFieldToFilter("quoteid", $quote_id)
+        ->getData();
+
+    if (count($filterpurchase) > 0) {
+        foreach ($filterpurchase as $pur) {
+            if ($pur['magento_customer_id'] === $purchase['id_customer']) {
+                $id = $pur['id'];
+                $purchaseModel = $this->purchaseFactory->create()->load($id);
+                $purchaseModel->setmagento_customer_id($purchase['id_customer']);
+                $purchaseModel->setpurchase_method($purchase['method']);
+                $purchaseModel->setquoteid($purchase['quoteid']);
+                $purchaseModel->setstatus($purchase['status']);
+                $purchaseModel->save();
+            }
+        }
+    } else {
+      $purchaseModel = $this->purchaseFactory->create();
+      $purchaseData = [
+          'magento_customer_id' => $purchase['id_customer'],
+          'purchase_method' => $purchase['method'],
+          'quoteid' => $purchase['quoteid'],
+          'status' => $purchase['status']
+      ];
+      $purchaseModel->setData($purchaseData);
+      $purchaseModel->save();
+    }
+    return $this;
+    }
+
+    public function _purchaseDataInactive($purchase)
+    {
+    $filterpurchase = [];
+    $customer_id = $purchase['id_customer'];
+    $quote_id = $purchase['quoteid'];
+    $filterpurchase = $this->purchaseFactory->create()
+        ->getCollection()
+        ->addFieldToFilter("magento_customer_id", $customer_id)
+        ->addFieldToFilter("quoteid", $quote_id)
+        ->getData();
+
+    if (count($filterpurchase) > 0) {
+        foreach ($filterpurchase as $pur) {
+            if ($pur['magento_customer_id'] === $purchase['id_customer']) {
+                $id = $pur['id'];
+                $purchaseModel = $this->purchaseFactory->create()->load($id);
+                $purchaseModel->setpurchase_method($purchase['method']);
+                $purchaseModel->setstatus($purchase['status']);
+                $purchaseModel->save();
+            }
+        }
+    }
+    return $this;
     }
 }

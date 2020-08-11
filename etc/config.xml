@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
-/**
- * Copyright © 2018 GBPrimePay Payments.
+/*
+ * Copyright © 2020 GBPrimePay Payments.
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -24,18 +24,38 @@
               <payment_action>authorize_capture</payment_action>
               <model>GBPrimePay\Payments\Model\GBPrimePayDirect</model>
           </gbprimepay_direct>
+          <gbprimepay_installment>
+              <instructions>Credit Card Installment</instructions>
+              <active>0</active>
+              <title>Pay with Credit Card Installment</title>
+              <kasikorn_installment_term>3, 4, 5, 6, 7, 8, 9, 10</kasikorn_installment_term>
+              <krungthai_installment_term>3, 4, 5, 6, 7, 8, 9, 10</krungthai_installment_term>
+              <thanachart_installment_term>3, 4, 6, 10</thanachart_installment_term>
+              <ayudhya_installment_term>3, 4, 6, 9, 10</ayudhya_installment_term>
+              <firstchoice_installment_term>3, 4, 6, 9, 10, 12, 18, 24</firstchoice_installment_term>
+              <scb_installment_term>3, 4, 6, 10</scb_installment_term>
+              <sort_order>20</sort_order>
+              <model>GBPrimePay\Payments\Model\GBPrimePayInstallment</model>
+          </gbprimepay_installment>
           <gbprimepay_qrcode>
               <instructions>QR Code</instructions>
               <active>0</active>
               <title>Pay with QR Code</title>
-              <sort_order>20</sort_order>
+              <sort_order>30</sort_order>
               <model>GBPrimePay\Payments\Model\GBPrimePayQrcode</model>
           </gbprimepay_qrcode>
+          <gbprimepay_qrcredit>
+              <instructions>QR Visa</instructions>
+              <active>0</active>
+              <title>Pay with QR Visa</title>
+              <sort_order>40</sort_order>
+              <model>GBPrimePay\Payments\Model\GBPrimePayQrcredit</model>
+          </gbprimepay_qrcredit>
           <gbprimepay_barcode>
-              <instructions>Barcode</instructions>
+              <instructions>Bill Payment</instructions>
               <active>0</active>
               <title>Pay with Bill Payment</title>
-              <sort_order>30</sort_order>
+              <sort_order>50</sort_order>
               <model>GBPrimePay\Payments\Model\GBPrimePayBarcode</model>
           </gbprimepay_barcode>
       </gbprimepay>
@@ -44,24 +64,38 @@
               <instructions></instructions>
               <active>1</active>
               <title>Pay with Credit Card</title>
-              <cctypes>VI,MC,JCB</cctypes>
+              <cctypes>AE,VI,MC,JCB</cctypes>
               <order_status>processing</order_status>
               <sort_order>10</sort_order>
               <payment_action>authorize_capture</payment_action>
               <model>GBPrimePay\Payments\Model\GBPrimePayDirect</model>
           </gbprimepay_direct>
+          <gbprimepay_installment>
+              <instructions></instructions>
+              <active>1</active>
+              <title>Pay with Credit Card Installment</title>
+              <sort_order>20</sort_order>
+              <model>GBPrimePay\Payments\Model\GBPrimePayInstallment</model>
+          </gbprimepay_installment>
           <gbprimepay_qrcode>
               <instructions></instructions>
               <active>1</active>
               <title>Pay with QR Code</title>
-              <sort_order>20</sort_order>
+              <sort_order>30</sort_order>
               <model>GBPrimePay\Payments\Model\GBPrimePayQrcode</model>
           </gbprimepay_qrcode>
+          <gbprimepay_qrcredit>
+              <instructions></instructions>
+              <active>1</active>
+              <title>Pay with QR Visa</title>
+              <sort_order>40</sort_order>
+              <model>GBPrimePay\Payments\Model\GBPrimePayQrcredit</model>
+          </gbprimepay_qrcredit>
           <gbprimepay_barcode>
               <instructions></instructions>
               <active>1</active>
               <title>Pay with Bill Payment</title>
-              <sort_order>30</sort_order>
+              <sort_order>50</sort_order>
               <model>GBPrimePay\Payments\Model\GBPrimePayBarcode</model>
           </gbprimepay_barcode>
         </payment>

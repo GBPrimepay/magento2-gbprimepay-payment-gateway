@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-/**
- * Copyright © 2018 GBPrimePay Payments.
+/*
+ * Copyright © 2020 GBPrimePay Payments.
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:/Event/etc/events.xsd">
-    <event name="gbprimepay_gen_qrcode">
-        <observer name="gbprimepay_payments_model_observer_requesttransactionqrcode"
-            instance="GBPrimePay\Payments\Model\Observer\RequestTransactionQrcode"/>
+    <event name="gbprimepay_before_direct">
+        <observer name="gbprimepay_payments_model_observer_requestbeforedirect"
+            instance="GBPrimePay\Payments\Model\Observer\RequestBeforeDirect"/>
     </event>
-    <event name="gbprimepay_gen_barcode">
-        <observer name="gbprimepay_payments_model_observer_requesttransactionbarcode"
-            instance="GBPrimePay\Payments\Model\Observer\RequestTransactionBarcode"/>
+    <event name="gbprimepay_before_installment">
+        <observer name="gbprimepay_payments_model_observer_requestbeforeinstallment"
+            instance="GBPrimePay\Payments\Model\Observer\RequestBeforeInstallment"/>
+    </event>
+    <event name="gbprimepay_before_qrcode">
+        <observer name="gbprimepay_payments_model_observer_requestbeforeqrcode"
+            instance="GBPrimePay\Payments\Model\Observer\RequestBeforeQrcode"/>
+    </event>
+    <event name="gbprimepay_before_qrcredit">
+        <observer name="gbprimepay_payments_model_observer_requestbeforeqrcredit"
+            instance="GBPrimePay\Payments\Model\Observer\RequestBeforeQrcredit"/>
+    </event>
+    <event name="gbprimepay_before_barcode">
+        <observer name="gbprimepay_payments_model_observer_requestbeforebarcode"
+            instance="GBPrimePay\Payments\Model\Observer\RequestBeforeBarcode"/>
     </event>
 </config>

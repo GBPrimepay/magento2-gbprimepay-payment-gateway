@@ -2,7 +2,7 @@
 /**
  * GBPrimePay_Payments extension
  * @package GBPrimePay_Payments
- * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
  */
 
 namespace GBPrimePay\Payments\Controller\Adminhtml\System\Config;
@@ -56,7 +56,7 @@ class ActiveCallbackBarcode extends Action
                     return $result->setData([
                         'success' => true,
                         'error' => false,
-                        'message' => "Actived, Barcode is already set"
+                        'message' => "Actived, Bill Payment is already set"
                     ]);
                     break;
                 case 2:

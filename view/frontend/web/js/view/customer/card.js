@@ -1,8 +1,6 @@
-<!--
 /**
- * Copyright © 2018 GBPrimePay Payments.
+ * Copyright © 2020 GBPrimePay Payments.
  */
--->
 require(
     [
         'jquery',

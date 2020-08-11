@@ -2,7 +2,7 @@
 /**
  * GBPrimePay_Payments extension
  * @package GBPrimePay_Payments
- * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
  */
 
 namespace GBPrimePay\Payments\Setup;
@@ -130,6 +130,58 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
         )->setComment(
             'Customer for GBPrimePay payment methods'
         );
+
+        $setup->getConnection()->createTable($table);
+
+        $table = $setup->getConnection()->newTable(
+            $setup->getTable($_prefix . 'purchase')
+        )->addColumn(
+            'id',
+            Table::TYPE_INTEGER,
+            null,
+            ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true],
+            'ID'
+        )->addColumn(
+            'magento_customer_id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            null,
+            [],
+            'Magento Customer ID'
+        )->addColumn(
+            'purchase_method',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            128,
+            [],
+            'Purchase Method'
+        )->addColumn(
+            'quoteid',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            128,
+            [
+                'unsigned' => true,
+                'nullable' => false,
+                'primary' => true
+            ],
+            'Quote ID'
+        )->addColumn(
+            'created_at',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+            null,
+            ['default' => Table::TIMESTAMP_INIT],
+            'Create Time'
+        )->addColumn(
+            'status',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            10,
+            [
+                'nullable' => false,
+                'default' => 'active'
+            ],
+            'Purchase Status'
+        )->setComment(
+            'Purchase Order for GBPrimePay payment methods'
+        );
+
 
         $setup->getConnection()->createTable($table);
     }

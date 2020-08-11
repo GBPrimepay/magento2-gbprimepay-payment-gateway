@@ -2,7 +2,7 @@
 /**
  * GBPrimePay_Payments extension
  * @package GBPrimePay_Payments
- * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
  */
 // @codingStandardsIgnoreFile
 /** @var \GBPrimePay\Payments\Block\Checkout\View\Config $block */
@@ -11,12 +11,35 @@ $isEnableSave = $configData->getIsSave();
 $cards = $block->getDataCard();
 $customerId = $block->customerSession->getCustomerId() ? '1' : '0';
 $baseUrl = $block->getBaseUrl();
-$afterPO = $block->getUrl("gbprimepay/checkout/afterplaceorder");
-$afterQrcode = $block->getUrl("gbprimepay/checkout/eventsqrcode");
-$afterBarcode = $block->getUrl("gbprimepay/checkout/eventsbarcode");
+$transaction_id = $block->getTransactionID();
+$transaction_key = $block->getTransactionKEY();
+$transaction_amt = $block->getTransactionAMT();
 
-$generateqrcode = $block->getGenerateQrcode();
-$generatebarcode = $block->getGenerateBarcode();
+$directPO = $block->getUrl("gbprimepay/checkout/directplaceorder");
+
+$responseInstallment = $block->getUrl("gbprimepay/checkout/responseinstallment");
+$beforeDirect = $block->getUrl("gbprimepay/checkout/eventsbeforedirect");
+$assignDirect = $block->getUrl("gbprimepay/checkout/eventsassigndirect");
+
+$beforeInstallment = $block->getUrl("gbprimepay/checkout/eventsbeforeinstallment");
+$assignInstallment = $block->getUrl("gbprimepay/checkout/eventsassigninstallment");
+$responseInstallment = $block->getUrl("gbprimepay/checkout/responseinstallment");
+$imgpathInstallment = $configData->getIssuerImgPath();
+
+$beforeQrcode = $block->getUrl("gbprimepay/checkout/eventsbeforeqrcode");
+$assignQrcode = $block->getUrl("gbprimepay/checkout/eventsassignqrcode");
+$responseQrcode = $block->getUrl("gbprimepay/checkout/responseqrcode");
+$generateQrcode = $block->getGenerateQrcode();
+
+$beforeQrcredit = $block->getUrl("gbprimepay/checkout/eventsbeforeqrcredit");
+$assignQrcredit = $block->getUrl("gbprimepay/checkout/eventsassignqrcredit");
+$responseQrcredit = $block->getUrl("gbprimepay/checkout/responseqrcredit");
+$generateQrcredit = $block->getGenerateQrcredit();
+
+$beforeBarcode = $block->getUrl("gbprimepay/checkout/eventsbeforebarcode");
+$assignBarcode = $block->getUrl("gbprimepay/checkout/eventsassignbarcode");
+$responseBarcode = $block->getUrl("gbprimepay/checkout/responsebarcode");
+$generateBarcode = $block->getGenerateBarcode();
 
 /** @var \Magento\Directory\Model\ResourceModel\Country\Collection $countryCollection */
 $countryCollection = $block->countryFactory->create()->getCollection();
@@ -28,24 +51,53 @@ foreach($countryCollection as $country) {
             }
 }
 ksort($countrySel);
-
 ?>
 <script>
     window.gbprimepay = {};
     window.gbprimepay.baseUrl = '<?php echo $baseUrl; ?>';
-    window.gbprimepay.afterPO = '<?php echo $afterPO; ?>';
-    window.gbprimepay.afterQrcode = '<?php echo $afterQrcode; ?>';
-    window.gbprimepay.afterBarcode = '<?php echo $afterBarcode; ?>';
     window.gbprimepay.customerLogin = Boolean('<?php echo $customerId; ?>' === "1");
-    window.gbprimepay.titledirect = '<?php echo $configData->getTitleDirect(); ?>';
-    window.gbprimepay.logodirect = '<?php echo $configData->getLogoDirect(); ?>';
-    window.gbprimepay.titleqrcode = '<?php echo $configData->getTitleQrcode(); ?>';
-    window.gbprimepay.titlebarcode = '<?php echo $configData->getTitleBarcode(); ?>';
-    window.gbprimepay.instructiondirect = '<?php echo $configData->getInstructionDirect(); ?>';
-    window.gbprimepay.instructionqrcode = '<?php echo $configData->getInstructionQrcode(); ?>';
-    window.gbprimepay.generateqrcode = '<?php echo $generateqrcode; ?>';
-    window.gbprimepay.instructionbarcode = '<?php echo $configData->getInstructionBarcode(); ?>';
-    window.gbprimepay.generatebarcode = '<?php echo $generatebarcode; ?>';
+    window.gbprimepay.transaction_id = '<?php echo $transaction_id; ?>';
+    window.gbprimepay.transaction_key = '<?php echo $transaction_key; ?>';
+    window.gbprimepay.transaction_amt = '<?php echo $transaction_amt; ?>';
+
+    window.gbprimepay.directPO = '<?php echo $directPO; ?>';
+    window.gbprimepay.beforeDirect = '<?php echo $beforeDirect; ?>';
+    window.gbprimepay.assignDirect = '<?php echo $assignDirect; ?>';
+    window.gbprimepay.logoDirect = '<?php echo $configData->getLogoDirect(); ?>';
+    window.gbprimepay.titleDirect = '<?php echo $configData->getTitleDirect(); ?>';
+    window.gbprimepay.instructionDirect = '<?php echo $configData->getInstructionDirect(); ?>';
+
+    window.gbprimepay.beforeInstallment = '<?php echo $beforeInstallment; ?>';
+    window.gbprimepay.assignInstallment = '<?php echo $assignInstallment; ?>';
+    window.gbprimepay.responseInstallment = '<?php echo $responseInstallment; ?>';
+    window.gbprimepay.imgpathInstallment = '<?php echo $imgpathInstallment; ?>';
+    window.gbprimepay.titleInstallment = '<?php echo $configData->getTitleInstallment(); ?>';
+    window.gbprimepay.instructionInstallment = '<?php echo $configData->getInstructionInstallment(); ?>';
+
+    window.gbprimepay.beforeQrcode = '<?php echo $beforeQrcode; ?>';
+    window.gbprimepay.assignQrcode = '<?php echo $assignQrcode; ?>';
+    window.gbprimepay.responseQrcode = '<?php echo $responseQrcode; ?>';
+    window.gbprimepay.logoQrcode = '<?php echo $configData->getLogoQrcode(); ?>';
+    window.gbprimepay.titleQrcode = '<?php echo $configData->getTitleQrcode(); ?>';
+    window.gbprimepay.instructionQrcode = '<?php echo $configData->getInstructionQrcode(); ?>';
+    window.gbprimepay.generateQrcode = '<?php echo $generateQrcode; ?>';
+
+    window.gbprimepay.beforeQrcredit = '<?php echo $beforeQrcredit; ?>';
+    window.gbprimepay.assignQrcredit = '<?php echo $assignQrcredit; ?>';
+    window.gbprimepay.responseQrcredit = '<?php echo $responseQrcredit; ?>';
+    window.gbprimepay.logoQrcredit = '<?php echo $configData->getLogoQrcredit(); ?>';
+    window.gbprimepay.titleQrcredit = '<?php echo $configData->getTitleQrcredit(); ?>';
+    window.gbprimepay.instructionQrcredit = '<?php echo $configData->getInstructionQrcredit(); ?>';
+    window.gbprimepay.generateQrcredit = '<?php echo $generateQrcredit; ?>';
+
+    window.gbprimepay.beforeBarcode = '<?php echo $beforeBarcode; ?>';
+    window.gbprimepay.assignBarcode = '<?php echo $assignBarcode; ?>';
+    window.gbprimepay.responseBarcode = '<?php echo $responseBarcode; ?>';
+    window.gbprimepay.logoBarcode= '<?php echo $configData->getLogoBarcode(); ?>';
+    window.gbprimepay.titleBarcode = '<?php echo $configData->getTitleBarcode(); ?>';
+    window.gbprimepay.instructionBarcode = '<?php echo $configData->getInstructionBarcode(); ?>';
+    window.gbprimepay.generateBarcode = '<?php echo $generateBarcode; ?>';
+
     window.gbprimepay.isEnableSave = Boolean('<?php echo $isEnableSave; ?>' === "1");
     window.gbprimepay.savedCards = [{"id": 0, "last4": "Use other card..."}];
     window.gbprimepay.jsoncountry = <?php echo json_encode($countrySel); ?>;

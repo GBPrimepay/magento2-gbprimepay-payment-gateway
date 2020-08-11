@@ -2,7 +2,7 @@
 /**
  * GBPrimePay_Payments extension
  * @package GBPrimePay_Payments
- * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
  */
 
 namespace GBPrimePay\Payments\Block\Adminhtml\System\Config;
@@ -68,10 +68,10 @@ class ActiveCallbackBarcode extends FormField
         $check = $this->checkEnable();
 
         if ($check) {
-            $buttonLabel = "GBPrimePay Barcode : Active";
+            $buttonLabel = "GBPrimePay Bill Payment : Active";
             $class = "callback-actived";
         } else {
-            $buttonLabel = "GBPrimePay Barcode : Inactive";
+            $buttonLabel = "GBPrimePay Bill Payment : Inactive";
             $class = "";
         }
 

@@ -2,7 +2,7 @@
 /**
  * GBPrimePay_Payments extension
  * @package GBPrimePay_Payments
- * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
  */
 // @codingStandardsIgnoreFile
 ?>
@@ -10,9 +10,15 @@
 <?php $_order = $block->getOrder();
 $_payment = $_order->getPayment();
 $checkFlag = false;
-if ($_payment->getAdditionalInformation('gbprimepayQrcodeId')) {
-    $dataQrcode = $_payment->getAdditionalInformation();
+$gbpFlag = false;
+if ($_payment->getAdditionalInformation('gbp_reference_no')) {
+    $dataCode = $_payment->getAdditionalInformation();
+    $checkFlag = false;
+    $gbpFlag = true;
+}else if ($_payment->getAdditionalInformation('transaction_id')) {
+    $dataCode = $_payment->getAdditionalInformation();
     $checkFlag = true;
+    $gbpFlag = false;
 }
 ?>
 <div class="block block-order-details-view">
@@ -70,39 +76,34 @@ if ($_payment->getAdditionalInformation('gbprimepayQrcodeId')) {
                     <table class="data table">
                         <tbody>
                         <tr>
-                            <th>Qrcode Name:</th>
-                            <td>
-                                <?php echo isset($dataQrcode['qrcode_name']) ? $dataQrcode['qrcode_name'] : '' ?>
+                            <td colspan="2">
+                                <span><?php echo isset($dataCode['method_title']) ? 'Waiting for '.$dataCode['method_title'] : '' ?></span>
                             </td>
                         </tr>
                         <tr>
-                            <th>Qrcode Account Name</th>
+                            <th>Transaction ID:</th>
                             <td>
-                                <?php echo isset($dataQrcode['account_name']) ? $dataQrcode['account_name'] : '' ?>
+                                <?php echo isset($dataCode['transaction_id']) ? $dataCode['transaction_id'] : '' ?>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+            
+            <?php if ($gbpFlag) : ?>
+                <div class="box-content">
+                    <table class="data table">
+                        <tbody>
+                        <tr>
+                            <td colspan="2">
+                                <span><?php echo isset($dataCode['method_title']) ? 'Payment Authorized, '.$dataCode['method_title'] : '' ?></span>
                             </td>
                         </tr>
                         <tr>
-                            <th>Qrcode Account Number</th>
+                            <th>Reference ID:</th>
                             <td>
-                                <?php echo isset($dataQrcode['account_number']) ? $dataQrcode['account_number'] : '' ?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Qrcode Routing number</th>
-                            <td>
-                                <?php echo isset($dataQrcode['routing_number']) ? $dataQrcode['routing_number'] : '' ?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Account type</th>
-                            <td>
-                                <?php echo isset($dataQrcode['account_type']) ? $dataQrcode['account_type'] : '' ?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Holder type</th>
-                            <td>
-                                <?php echo isset($dataQrcode['holder_type']) ? $dataQrcode['holder_type'] : '' ?>
+                                <?php echo isset($dataCode['gbp_reference_no']) ? $dataCode['gbp_reference_no'] : '' ?>
                             </td>
                         </tr>
                         </tbody>

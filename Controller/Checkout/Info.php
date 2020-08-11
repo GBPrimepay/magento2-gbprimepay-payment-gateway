@@ -2,7 +2,7 @@
 /**
  * GBPrimePay_Payments extension
  * @package GBPrimePay_Payments
- * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
  */
 
 namespace GBPrimePay\Payments\Controller\Checkout;
@@ -23,6 +23,12 @@ class Info extends \GBPrimePay\Payments\Controller\Checkout
     {
 
 // $this->checkCustomerKey();
+// $selected = $this->_config->setGBPMethod('selected_qrcode');
+
+
+
+echo "<br>GBPMethod-".$this->_config->getGBPMethod();
+
 echo "<br>getInstructionDirect-".$this->_config->getInstructionDirect();
 echo "<br>getInstructionQrcode-".$this->_config->getInstructionQrcode();
 echo "<br>getInstructionBarcode-".$this->_config->getInstructionBarcode();
@@ -47,6 +53,8 @@ echo "<br>getActiveQrcode-".$this->_config->getActiveQrcode();
 echo "<br>getActiveBarcode-".$this->_config->getActiveBarcode();
 echo "<br>checkActivated-".$this->_config->checkActivated();
 
+echo "<br>getresponseUrl-response_direct-".$this->_config->getresponseUrl('response_direct');
+echo "<br>getresponseUrl-background_direct-".$this->_config->getresponseUrl('background_direct');
 echo "<br>getresponseUrl-response_qrcode-".$this->_config->getresponseUrl('response_qrcode');
 echo "<br>getresponseUrl-background_qrcode-".$this->_config->getresponseUrl('background_qrcode');
 echo "<br>getresponseUrl-response_barcode-".$this->_config->getresponseUrl('response_barcode');
@@ -71,7 +79,7 @@ echo "<br>info";
       // $geturl = Constant::URL_DEBIT_AUTHORITY_TEST;
       // echo 'geturl '.$geturl.' <br>';
       //
-      
+
 
 
 
@@ -93,10 +101,10 @@ echo "<br>info";
 
 
 if (!empty($callback['merchantId']) && !empty($callback['initialShop']) && !empty($callback['merchantName'])) {
-  echo 'true';
+  echo '1-merchantId-initialShop-merchantName:<br>true';
 
 }else{
-  echo 'false';
+  echo '2-merchantId-initialShop-merchantName:<br>false';
 }
 
 
@@ -154,6 +162,8 @@ $field = "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-d
         CURLOPT_ENCODING => "",
         CURLOPT_MAXREDIRS => 10,
         CURLOPT_TIMEOUT => 30,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => false,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => "POST",
         CURLOPT_POSTFIELDS => $field,
@@ -198,6 +208,8 @@ echo '<img src="data:image/png;base64,' . base64_encode($response) . '">';
         CURLOPT_ENCODING => "",
         CURLOPT_MAXREDIRS => 10,
         CURLOPT_TIMEOUT => 30,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => false,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => "POST",
         CURLOPT_POSTFIELDS => $field,

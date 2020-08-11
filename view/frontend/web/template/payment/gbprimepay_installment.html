@@ -1,0 +1,164 @@
+<!--
+/**
+ * Copyright © 2020 GBPrimePay Payments.
+ */
+-->
+<style>
+    .payment-method {
+      border-bottom: 1px solid #cccccc;
+    }
+    .payment-method:last-child {
+      border-bottom: 0px solid #cccccc;
+    }
+    </style>
+    <div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+        <div class="payment-method-title field choice">
+    
+            <input type="radio"
+                   name="payment[method]"
+                   class="radio"
+                   data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()  "/>
+            <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitleInstallment()"></span></label>
+    
+        </div>
+        <div class="payment-method-content">
+            <!-- ko foreach: getRegion('messages') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+            <div class="payment-method-billing-address">
+                <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+                <!-- ko template: getTemplate() --><!-- /ko -->
+                <!--/ko-->
+            </div>
+<style>
+.checkout-payment-method .field .bankcode, .checkout-payment-method .field .term {
+    margin: 0 0 10px;
+}
+.checkout-payment-method .fields .bankcode .select, .checkout-payment-method .fields .bankcode .select {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.checkout-payment-method .bankcode .label, .checkout-payment-method .term .label {
+  font-weight: 600;
+  margin: 0 0 8px;
+  display: inline-block;
+}
+.checkout-payment-method .bankcode .label:after, .checkout-payment-method .term .label:after {
+  content: '*';
+  color: #e02b27;
+  font-size: 1.2rem;
+  margin: 0 0 0 5px;
+}
+.checkout-payment-method .bankcode .select, .checkout-payment-method .term .select {
+  width:100%;max-width:305px;
+}
+
+</style>
+            <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
+                <fieldset data-bind="attr: {class: 'fieldset payment acc items ccard ' + getCode(), id: 'payment_form_' + getCode()}">
+              <div class="field date required" id="gbprimepay_installment_issuers_div" data-bind="attr: {id: getCode() + '_issuers_div', 'data-amount': getTransactionAMT()}">
+                <div class="control">
+                <div class="field bankcode required" style="display:block;" data-bind="attr: {id: getCode() + '_issuers_bankcode_div'}">
+                  <label data-bind="attr: {for: getCode() + '_issuers_bankcode'}" class="label">
+                      <span><!-- ko i18n: 'Issuers Bank'--><!-- /ko --></span>
+                  </label>
+                    <div class="control">                          
+                      <select style="display:block;" id="gbprimepay_installment_issuers_bankcode" name="payment[issuers_bankcode]"
+                      class="select"
+                      data-bind="attr: {id: getCode() + '_issuers_bankcode'
+                        ">
+                          <option value="" data-keep="false">Card issuer bank..</option>
+                      </select>
+                    </div>
+                </div>
+                <div class="field term required" style="display:block;" data-bind="attr: {id: getCode() + '_issuers_term_div'}">
+                  <label data-bind="attr: {for: getCode() + '_issuers_term'}" class="label">
+                      <span><!-- ko i18n: 'Terms'--><!-- /ko --></span>
+                  </label>
+                    <div class="control">
+                      <select style="display:block;" id="gbprimepay_installment_issuers_term" name="payment[issuers_term]"
+                      class="select"
+                      data-bind="attr: {id: getCode() + '_issuers_term'
+                        ">
+                          <option value="" data-keep="false">The number of monthly installments..</option>
+                      </select>
+                    </div>
+                </div>
+                <div class="field type" style="display:block;">
+                    <div class="control">
+                      <div id="gbprimepay_installment_issuers_info" style="width:100%;max-width:305px;margin:30px 0 40px 0;"></div>
+                    </div>
+                </div>
+                
+              <div class="field type" style="display:none;">
+                  <div class="control">
+                      <input type="text"
+                             name="payment[transaction_id]"
+                             class="input-text"
+                             value=""
+                             data-bind="attr: {id: getCode() + '_transaction_id', 'data-container': getCode() + '-transaction-id'},
+                             value: getTransactionID()
+                             ">
+                  </div>
+              </div>
+              <div class="field type" style="display:none;">
+                  <div class="control">
+                      <input type="text"
+                             name="payment[transaction_key]"
+                             class="input-text"
+                             value=""
+                             data-bind="attr: {id: getCode() + '_transaction_key', 'data-container': getCode() + '-transaction-key'},
+                             value: getTransactionKEY()
+                             ">
+                  </div>
+              </div>
+              <div class="field type" style="display:none;">
+                  <div class="control">
+                      <input type="text"
+                             name="payment[transaction_amt]"
+                             class="input-text"
+                             value=""
+                             data-bind="attr: {id: getCode() + '_transaction_amt', 'data-container': getCode() + '-transaction-amt'},
+                             value: getTransactionAMT()
+                             ">
+                  </div>
+              </div>
+              <div class="field type" style="display:none;">
+                  <div class="control">
+                      <input type="text"
+                             name="payment[transaction_img]"
+                             class="input-text"
+                             value=""
+                             data-bind="attr: {id: getCode() + '_transaction_img', 'data-container': getCode() + '-transaction-img'},
+                             value: getImgpathInstallment()
+                             ">
+                  </div>
+              </div>
+          </div>
+          </div>
+            </fieldset>
+              </form>
+            <p data-bind="html: getInstructionInstallment()"></p>
+            <div class="checkout-agreements-block">
+                <!-- ko foreach: $parent.getRegion('before-place-order') -->
+                <!-- ko template: getTemplate() --><!-- /ko -->
+                <!--/ko-->
+            </div>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <button class="action primary checkout"
+                            type="submit"
+                            data-bind="
+                            click: placeOrder,
+                            attr: {title: $t('Continue to Payment')},
+                            enable: (getCode() == isChecked()),
+                            css: {disabled: !isPlaceOrderActionAllowed()}
+                            "
+                            disabled>
+                        <span data-bind="i18n: 'Continue to Payment'"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>    
+<div id="GBPdummy" style="display: none;"></div>

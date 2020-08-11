@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
-/**
- * Copyright © 2018 GBPrimePay Payments.
+/*
+ * Copyright © 2020 GBPrimePay Payments.
  */
 -->
 <payment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Magento/Payment/etc/payment.xsd">
@@ -14,7 +14,13 @@
         <method name="gbprimepay_direct">
             <allow_multiple_address>1</allow_multiple_address>
         </method>
+        <method name="gbprimepay_installment">
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
         <method name="gbprimepay_qrcode">
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
+        <method name="gbprimepay_qrcredit">
             <allow_multiple_address>1</allow_multiple_address>
         </method>
         <method name="gbprimepay_barcode">

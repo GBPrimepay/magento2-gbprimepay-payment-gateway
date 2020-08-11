@@ -1,11 +1,14 @@
 <!--
 /**
- * Copyright © 2018 GBPrimePay Payments.
+ * Copyright © 2020 GBPrimePay Payments.
  */
 -->
 <style>
-.qrcode_display {
-
+.payment-method {
+  border-bottom: 1px solid #cccccc;
+}
+.payment-method:last-child {
+  border-bottom: 0px solid #cccccc;
 }
 </style>
 <div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
@@ -30,10 +33,58 @@
             <!-- ko template: getTemplate() --><!-- /ko -->
             <!--/ko-->
         </div>
-        <hr>
-        <div class="qrcode_display" id="qrcode_display"><img data-bind="attr: { src: getQrcode() }"  style="padding:0px 0px 0px 0px;windth:80%;" /></div>
+        <div class="field type">
+            <div class="control">
+    
+    
+                        <img data-bind="attr: { src: getLogoQrcode() }"  style="padding:0px 0px 0px 0px;" />
+    
+    
+            </div>
+        </div>
+
+
+        <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
+          <div class="field type" style="display:none;">
+              <div class="control">
+                  <input type="text"
+                         name="payment[transaction_id]"
+                         class="input-text"
+                         value=""
+                         data-bind="attr: {id: getCode() + '_transaction_id', 'data-container': getCode() + '-transaction-id'},
+                         value: getTransactionID()
+                         ">
+              </div>
+          </div>
+          <div class="field type" style="display:none;">
+            <div class="control">
+                <input type="text"
+                       name="payment[transaction_key]"
+                       class="input-text"
+                       value=""
+                       data-bind="attr: {id: getCode() + '_transaction_key', 'data-container': getCode() + '-transaction-key'},
+                       value: getTransactionKEY()
+                       ">
+            </div>
+        </div>
+        </form>
 
         <p data-bind="html: getInstructionQrcode()"></p>
+        <div class="actions-toolbar">
+            <div class="primary">
+                <button class="action primary checkout"
+                        type="submit"
+                        data-bind="
+                        click: placeOrder,
+                        attr: {title: $t('Place Order')},
+                        enable: (getCode() == isChecked()),
+                        css: {disabled: !isPlaceOrderActionAllowed()}
+                        "
+                        disabled>
+                    <span data-bind="text: 'Continue to Payment'">Continue to Payment</span>
+                </button>
+            </div>
+        </div>
 
     </div>
 </div>

@@ -1,8 +1,6 @@
-<!--
-/**
- * Copyright © 2018 GBPrimePay Payments.
- */
--->
+/*
+* Copyright © 2020 GBPrimePay Payments.
+*/
 define(
     [
         'jquery',
@@ -22,8 +20,16 @@ define(
                 component: 'GBPrimePay_Payments/js/view/payment/method-renderer/gbprimepay-direct'
             },
             {
+                type: 'gbprimepay_installment',
+                component: 'GBPrimePay_Payments/js/view/payment/method-renderer/gbprimepay-installment'
+            },
+            {
                 type: 'gbprimepay_qrcode',
                 component: 'GBPrimePay_Payments/js/view/payment/method-renderer/gbprimepay-qrcode'
+            },
+            {
+                type: 'gbprimepay_qrcredit',
+                component: 'GBPrimePay_Payments/js/view/payment/method-renderer/gbprimepay-qrcredit'
             },
             {
                 type: 'gbprimepay_barcode',

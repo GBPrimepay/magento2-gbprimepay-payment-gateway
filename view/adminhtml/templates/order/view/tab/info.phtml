@@ -2,7 +2,7 @@
 /**
  * GBPrimePay_Payments extension
  * @package GBPrimePay_Payments
- * @copyright Copyright (c) 2018 GBPrimePay Payments (https://gbprimepay.com/)
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
  */
 // @codingStandardsIgnoreFile
 ?>
@@ -11,9 +11,15 @@
 <?php
 $_payment = $_order->getPayment();
 $checkFlag = false;
-if ($_payment->getAdditionalInformation('gbprimepayBankId')) {
-    $dataBank = $_payment->getAdditionalInformation();
+$gbpFlag = false;
+if ($_payment->getAdditionalInformation('gbp_reference_no')) {
+    $dataCode = $_payment->getAdditionalInformation();
+    $checkFlag = false;
+    $gbpFlag = true;
+}else if ($_payment->getAdditionalInformation('transaction_id')) {
+    $dataCode = $_payment->getAdditionalInformation();
     $checkFlag = true;
+    $gbpFlag = false;
 }
 ?>
 <div id="order-messages">
@@ -48,39 +54,36 @@ echo $_order->getId() ?>"/>
                         <table class="data-table admin__table-secondary">
                             <tbody>
                             <tr>
-                                <th>Bank Name:</th>
+                                <th>Status:</th>
                                 <td>
-                                    <?php echo isset($dataBank['bank_name']) ? $dataBank['bank_name'] : '' ?>
+                                    <?php echo isset($dataCode['method_title']) ? 'Waiting for '.$dataCode['method_title'] : '' ?>
                                 </td>
                             </tr>
                             <tr>
-                                <th>Bank Account Name</th>
+                                <th>Transaction ID:</th>
                                 <td>
-                                    <?php echo isset($dataBank['account_name']) ? $dataBank['account_name'] : '' ?>
+                                    <?php echo isset($dataCode['transaction_id']) ? $dataCode['transaction_id'] : '' ?>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+                
+                <?php if ($gbpFlag) : ?>
+                    <div>
+                        <table class="data-table admin__table-secondary">
+                            <tbody>
+                            <tr>
+                                <th>Status:</th>
+                                <td>
+                                    <?php echo isset($dataCode['method_title']) ? 'Payment Authorized, '.$dataCode['method_title'] : '' ?>
                                 </td>
                             </tr>
                             <tr>
-                                <th>Bank Account Number</th>
+                                <th>Reference ID:</th>
                                 <td>
-                                    <?php echo isset($dataBank['account_number']) ? $dataBank['account_number'] : '' ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Bank Routing number</th>
-                                <td>
-                                    <?php echo isset($dataBank['routing_number']) ? $dataBank['routing_number'] : '' ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Account type</th>
-                                <td>
-                                    <?php echo isset($dataBank['account_type']) ? $dataBank['account_type'] : '' ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Holder type</th>
-                                <td>
-                                    <?php echo isset($dataBank['holder_type']) ? $dataBank['holder_type'] : '' ?>
+                                    <?php echo isset($dataCode['gbp_reference_no']) ? $dataCode['gbp_reference_no'] : '' ?>
                                 </td>
                             </tr>
                             </tbody>

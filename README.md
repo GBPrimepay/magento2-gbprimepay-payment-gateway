@@ -1,6 +1,6 @@
 <img src="https://www.globalprimepay.com/dist/images/logo.svg" width="130" />
 
-# GBPrimePay Payment 
+# GBPrimePay Payment v2.0.0
 
 ## Installation
 

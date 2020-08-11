@@ -1,17 +1,29 @@
-<!--
-/**
- * Copyright © 2018 GBPrimePay Payments.
- */
--->
+/*
+* Copyright © 2020 GBPrimePay Payments.
+*/
 define(
     [
         'jquery',
-        'ko',
         'Magento_Payment/js/view/payment/cc-form',
         'Magento_Checkout/js/model/full-screen-loader',
         'Magento_Checkout/js/model/payment/additional-validators',
-        'Magento_Checkout/js/action/redirect-on-success'
-    ], function ($, ko, Component, fullScreenLoader, additionalValidators, redirectOnSuccessAction) {
+        'Magento_Checkout/js/action/redirect-on-success',
+        'Magento_Checkout/js/action/place-order',
+        'Magento_Checkout/js/action/select-payment-method',
+        'Magento_Customer/js/model/customer',
+        'mage/url',
+        'ko'
+    ], function ($,
+        Component,
+        fullScreenLoader,
+        additionalValidators,
+        redirectOnSuccessAction,
+        placeOrderAction,
+        selectPaymentMethodAction,
+        customer,
+        url,
+        ko
+        ) {
         'use strict';
 
         var card = function (newCard) {
@@ -67,13 +79,19 @@ define(
                 return true;
             },
             getInstructionDirect:function () {
-              return window.gbprimepay.instructiondirect;
+              return window.gbprimepay.instructionDirect;
             },
             getTitleDirect:function () {
-              return window.gbprimepay.titledirect;
+              return window.gbprimepay.titleDirect;
             },
             getLogoDirect:function () {
-              return window.gbprimepay.logodirect;
+              return window.gbprimepay.logoDirect;
+            },
+            getTransactionID: function () {
+                return window.gbprimepay.transaction_id;
+            },
+            getTransactionKEY: function () {
+                return window.gbprimepay.transaction_key;
             },
             getData:function () {
                 var isSave = $('#is-save').is(":checked");
@@ -93,20 +111,46 @@ define(
                     }
                 };
             },
+            placeOrder: function (data, event) {
+                if (event) {
+                    event.preventDefault();
+                }
 
-            afterPlaceOrder: function () {
+                var self = this,
+                    placeOrder,
+                    emailValidationResult = customer.isLoggedIn(),
+                    loginFormSelector = 'form[data-role=email-with-possible-login]';
+                if (!customer.isLoggedIn()) {
+                    $(loginFormSelector).validation();
+                    emailValidationResult = Boolean($(loginFormSelector + ' input[name=username]').valid());
+                }
+                if (emailValidationResult && this.validate() && additionalValidators.validate()) {
+                    this.isPlaceOrderActionAllowed(false);
+                    placeOrder = placeOrderAction(this.getData(), false, this.messageContainer);
+
+                    $.when(placeOrder).fail(function () {
+                        self.isPlaceOrderActionAllowed(true);
+                    }).done(this.afterPlaceOrder.bind(this));
+                    return true;
+                }
+                return false;
+            },
+            afterPlaceOrder: function (orderId) {
                 var self = this;
                 fullScreenLoader.startLoader();
                 self.isPlaceOrderActionAllowed(false);
                 $.ajax({
                     type: 'POST',
-                    url: window.gbprimepay.afterPO,
+                    url: window.gbprimepay.directPO,
                     dataType: "json",
                     success: function (response) {
                         if (response.success) {
+                            var $orderId = orderId;
+                            if ($orderId == response.Tid) {
+                                window.location.replace(url.build('gbprimepay/checkout/redirect/id/' + response.Tid + '/tf/' + response.Tref + '/key/' + response.Tkey ));
+                            }
                             fullScreenLoader.stopLoader();
                             self.isPlaceOrderActionAllowed(true);
-                            redirectOnSuccessAction.execute();
                         }
                         if (response.error) {
                             fullScreenLoader.stopLoader();
@@ -118,7 +162,6 @@ define(
                         }
                     },
                     error: function (response) {
-                      window.console.log(response);
                         fullScreenLoader.stopLoader();
                         self.isPlaceOrderActionAllowed(true);
                         $(".loading-mask").hide();
@@ -127,6 +170,43 @@ define(
                         });
                     }
                 });
+            },
+            loadDirectRender: function () {
+                var self = this;
+                fullScreenLoader.startLoader();
+                self.isPlaceOrderActionAllowed(false);
+                $.ajax({
+                    type: 'POST',
+                    url: window.gbprimepay.beforeDirect,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            fullScreenLoader.stopLoader();
+                            $("input[name='payment[transaction_id]']").val(response.transaction_id);
+                            $("input[name='payment[transaction_key]']").val(response.transaction_key);
+                            self.isPlaceOrderActionAllowed(true);
+                        }
+                        if (response.error) {
+                            fullScreenLoader.stopLoader();
+                            $(".loading-mask").hide();
+                            self.messageContainer.addErrorMessage({
+                                message: response.message
+                            });
+                        }
+                    },
+                    error: function (response) {
+                        fullScreenLoader.stopLoader();
+                        $(".loading-mask").hide();
+                        self.messageContainer.addErrorMessage({
+                            message: "Error, please try again"
+                        });
+                    }
+                });
+            },
+            selectPaymentMethod: function() {
+              var result = this._super();
+              this.loadDirectRender();
+              return result;
             }
         });
     }

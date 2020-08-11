@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
-/**
- * Copyright © 2018 GBPrimePay Payments.
+/*
+ * Copyright © 2020 GBPrimePay Payments.
  */
 -->
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -24,7 +24,7 @@
         </field>
 
         <field id="active_callback" translate="button_label" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
-            <button_label>GBPrimePay Barcode</button_label>
+            <button_label>GBPrimePay Bill Payment</button_label>
             <frontend_model>GBPrimePay\Payments\Block\Adminhtml\System\Config\ActiveCallbackBarcode</frontend_model>
             <comment>Click this button to Check Status</comment>
         </field>

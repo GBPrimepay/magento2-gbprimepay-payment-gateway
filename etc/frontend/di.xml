@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
-/**
- * Copyright © 2018 GBPrimePay Payments.
+/*
+ * Copyright © 2020 GBPrimePay Payments.
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
@@ -25,7 +25,23 @@
     <virtualType name="GBPrimePay\Payments\Model\ConfigProvider" type="Magento\Payment\Model\CcGenericConfigProvider">
         <arguments>
             <argument name="methodCodes" xsi:type="array">
+                <item name="gbprimepay_installment" xsi:type="const">GBPrimePay\Payments\Model\GBPrimePayInstallment::CODE</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="GBPrimePay\Payments\Model\ConfigProvider" type="Magento\Payment\Model\CcGenericConfigProvider">
+        <arguments>
+            <argument name="methodCodes" xsi:type="array">
                 <item name="gbprimepay_qrcode" xsi:type="const">GBPrimePay\Payments\Model\GBPrimePayQrcode::CODE</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="GBPrimePay\Payments\Model\ConfigProvider" type="Magento\Payment\Model\CcGenericConfigProvider">
+        <arguments>
+            <argument name="methodCodes" xsi:type="array">
+                <item name="gbprimepay_qrcredit" xsi:type="const">GBPrimePay\Payments\Model\GBPrimePayQrcredit::CODE</item>
             </argument>
         </arguments>
     </virtualType>
