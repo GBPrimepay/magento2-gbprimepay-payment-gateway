@@ -1,30 +1,27 @@
 {
     "name": "gbprimepay/payments",
     "description": "GBPrimePay Payments for Magento 2",
-    "type": "magento2-module",
+    "homepage": "https://github.com/GBPrimepay/magento2-gbprimepay-payment-gateway",
     "version": "2.0.0",
+    "minimum-stability": "stable",
+    "type": "magento2-module",
     "license": [
         "OSL-3.0",
         "proprietary"
     ],
     "require": {
-        "magento/framework": "^101.0|^102.0",
-        "magento/module-payment": "100.2.*|100.3.*",
-        "magento/module-sales": "^101.0|^102.0",
-        "php": ">=7.0",
+        "php": "~5.5.0|~5.6.0|~7",
+        "magento/magento-composer-installer": "0.1.13",
+        "magento/module-payment": ">=100.1",
+        "magento/module-checkout": ">=100.1",
+        "magento/module-sales": ">=100.1",
         "ext-curl": "*",
-        "ext-json": "*",
-        "ext-pcre": "*"
-    },
-    "require-dev": {
-        "php": ">=7.1"
+        "ext-json": "*"
     },
     "autoload": {
-        "files": [
-            "registration.php"
-        ],
+        "files": ["registration.php"],
         "psr-4": {
-            "GBPrimePay\\Payments\\": ""
+            "GBPrimePay\\Payment\\": ""
         }
     }
 }
