@@ -13,7 +13,8 @@
     "config": {
         "platform": {
             "php": "7.0.0"
-        },
+        }
+    },
     "type": "magento2-module",
     "version": "2.0.0",
     "license": [
