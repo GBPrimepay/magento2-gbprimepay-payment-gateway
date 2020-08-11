@@ -2,8 +2,16 @@
     "name": "gbprimepay/payments",
     "description": "GBPrimePay Payments for Magento 2",
     "require": {
-        "php": "~5.6.5|7.0.2|7.0.4|~7.0.6|~7.1.0",
-        "ext-curl": "*"
+        "magento/framework": "^101.0|^102.0",
+        "magento/module-payment": "100.2.*|100.3.*",
+        "magento/module-sales": "^101.0|^102.0",
+        "php": ">=7.0",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-pcre": "*"
+    },
+    "require-dev": {
+        "php": ">=7.1"
     },
     "type": "magento2-module",
     "version": "2.0.0",
