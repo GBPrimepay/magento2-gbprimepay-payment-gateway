@@ -2,18 +2,9 @@
     "name": "gbprimepay/payments",
     "description": "GBPrimePay Payments for Magento 2",
     "require": {
-        "php": ">=7.0",
+        "php": "7.0.*",
         "ext-curl": "*",
-        "ext-json": "*",
-        "ext-pcre": "*"
-    },
-    "require-dev": {
-        "php": ">=7.0"
-    },
-    "config": {
-        "platform": {
-            "php": "7.0.0"
-        }
+        "ext-json": "*"
     },
     "type": "magento2-module",
     "version": "2.0.0",
