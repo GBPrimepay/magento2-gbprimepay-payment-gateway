@@ -36,7 +36,7 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
         $version = $context->getVersion();
         $setup->startSetup();
 
-        if (version_compare($version, '1.8.3') < 0) {
+        if (version_compare($version, '1.8.4') < 0) {
           $table = $setup->getConnection()->newTable(
               $setup->getTable($_prefix . 'purchase')
           )->addColumn(
