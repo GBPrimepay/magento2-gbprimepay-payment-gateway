@@ -56,7 +56,7 @@ class ActiveCallbackInstallment extends Action
                     return $result->setData([
                         'success' => true,
                         'error' => false,
-                        'message' => "Actived, QR Code is already set"
+                        'message' => "Actived, Credit Card Installment is already set"
                     ]);
                     break;
                 case 2:
