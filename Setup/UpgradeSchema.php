@@ -33,6 +33,7 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
 
 
         $_prefix = Constant::TABLE_PREFIX;
+        $version = $context->getVersion();
         $setup->startSetup();
 
         if (version_compare($version, '1.8.3') < 0) {
