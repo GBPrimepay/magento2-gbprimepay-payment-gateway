@@ -85,9 +85,7 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
           )->setComment(
               'Purchase Order for GBPrimePay payment methods'
           );
+          $setup->getConnection()->createTable($table);
         }
-
-
-        $setup->getConnection()->createTable($table);
     }
 }
