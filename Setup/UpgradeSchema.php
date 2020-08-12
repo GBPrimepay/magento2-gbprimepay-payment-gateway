@@ -18,12 +18,12 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
     /**
      * DB setup code
      *
-     * @param \Magento\Framework\Setup\SchemaSetupInterface $setup
+     * @param \Magento\Framework\Setup\UpgradeSchemaInterface $setup
      * @param \Magento\Framework\Setup\ModuleContextInterface $context
      * @return void
      */
     public function install(
-        \Magento\Framework\Setup\SchemaSetupInterface $setup,
+        \Magento\Framework\Setup\UpgradeSchemaInterface $setup,
         \Magento\Framework\Setup\ModuleContextInterface $context
     ) {
 
