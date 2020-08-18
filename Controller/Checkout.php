@@ -21,6 +21,7 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
     protected $checkoutRegistry;
     protected $resultJsonFactory;
     protected $resultPageFactory;
+    protected $resultRedirectFactory;
     protected $orderFactory;
     protected $quoteFactory;
     protected $placeManagement;
@@ -31,12 +32,14 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
     protected $transactionFactory;
     protected $transactionBuilder;
     protected $orderRepository;
+    protected $quoteRepository;
     protected $jsonFactory;
     protected $config;
     protected $storeManager;
     protected $baseUrl;
     protected $_config;
     protected $gbprimepayLogger;
+    protected $CsrfValidator;
     protected $gbprimepayDirect;
     protected $gbprimepayInstallment;
     protected $gbprimepayQrcode;
@@ -46,10 +49,12 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
     protected $orderManagement;
     protected $collectionFactory;
     protected $orderSender;
+    protected $formKeyValidator;
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Payment\Helper\Data $paymentHelper,
+        \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\Sales\Model\Order $orderPayment,
@@ -57,10 +62,13 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
         \Magento\Sales\Model\Service\InvoiceService $invoiceService,
         \Magento\Framework\DB\TransactionFactory $transactionFactory,
         \Magento\Sales\Model\Order\Payment\Transaction\Builder $transactionBuilder,
-        \Magento\Sales\Model\OrderRepository $orderRepository,
+        \Magento\Sales\Model\OrderRepository $orderRepository,        
+        \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Framework\Registry $checkoutRegistry,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
+        \Magento\Framework\Controller\Result\RedirectFactory $resultRedirectFactory,
+        \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
         \Magento\Customer\Model\Session $customerSession,
         \Magento\Checkout\Helper\Data $checkoutData,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
@@ -68,6 +76,7 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \GBPrimePay\Payments\Logger\Logger $gbprimepayLogger,
         \GBPrimePay\Payments\Helper\ConfigHelper $configHelper,
+        \GBPrimePay\Payments\Controller\Checkout\CsrfValidator $CsrfValidator,
         \GBPrimePay\Payments\Model\GBPrimePayDirect $gbprimepayDirect,
         \GBPrimePay\Payments\Model\GBPrimePayInstallment $gbprimepayInstallment,
         \GBPrimePay\Payments\Model\GBPrimePayQrcode $gbprimepayQrcode,
@@ -80,16 +89,19 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
         $params = []
     ) {
         $this->_messageManager = $context->getMessageManager();
+        $this->CsrfValidator = $CsrfValidator;
         $this->gbprimepayDirect = $gbprimepayDirect;
         $this->gbprimepayInstallment = $gbprimepayInstallment;
         $this->gbprimepayQrcode = $gbprimepayQrcode;
         $this->gbprimepayQrcredit = $gbprimepayQrcredit;
         $this->gbprimepayBarcode = $gbprimepayBarcode;
         $this->gbprimepayLogger = $gbprimepayLogger;
+        $this->customerRepository = $customerRepository;
         $this->customerSession = $customerSession;
         $this->_config = $configHelper;
         $this->checkoutSession = $checkoutSession;
         $this->PageFactory = $resultPageFactory;
+        $this->RedirectFactory = $resultRedirectFactory;
         $this->checkoutRegistry = $checkoutRegistry;
         $this->orderFactory = $orderFactory;
         $this->quoteFactory = $quoteFactory;
@@ -100,7 +112,8 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
         $this->invoiceService = $invoiceService;
         $this->transactionFactory = $transactionFactory;
         $this->transactionBuilder = $transactionBuilder;        
-        $this->orderRepository = $orderRepository;
+        $this->orderRepository = $orderRepository;      
+        $this->quoteRepository = $quoteRepository;
         $this->orderSender = $orderSender;
         $this->jsonFactory = $resultJsonFactory;
         $this->storeManager = $storeManager;
@@ -113,7 +126,7 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
     /**
      * @param \Magento\Sales\Model\Order $order
      */
-    protected function sendEmailCustomer($order)
+    public function sendEmailCustomer($order)
     {
         try {
             $this->orderSender->send($order);
@@ -121,8 +134,21 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
             $this->gbprimepayLogger->critical($e);
         }
     }
+    
+    public function reloadCustomerId($payment, int $customerId, $transaction_form)
+    {
+        try {
+            $customer = $this->customerRepository->getById($customerId);
+        } catch (\Exception $e) {
+            $this->gbprimepayLogger->critical($e);
+        }
+        $this->customerSession->setCustomerDataAsLoggedIn($customer);
+        if ($this->_config->getCanDebug()) {
+            $this->gbprimepayLogger->addDebug("\r\n reload //" . $transaction_form);
+        }       
+    }
 
-    protected function cancelOrder()
+    public function cancelOrder()
     {
         try {
             $orderId = $this->checkoutSession->getLastRealOrder()->getId();
@@ -131,7 +157,7 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
             $this->gbprimepayLogger->addCritical($e->getMessage());
         }
     }
-    protected function holdOrder()
+    public function holdOrder()
     {
         try {
             $orderId = $this->checkoutSession->getLastRealOrder()->getId();
@@ -142,7 +168,7 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
             $this->gbprimepayLogger->addCritical($e->getMessage());
         }
     }
-    protected function unHoldOrder()
+    public function unHoldOrder()
     {
         try {
             $orderId = $this->checkoutSession->getLastRealOrder()->getId();
@@ -152,7 +178,7 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
             $this->gbprimepayLogger->addCritical($e->getMessage());
         }
     }
-    protected function placeOrder($quote_id,$paymentMethod)
+    public function placeOrder($quote_id,$paymentMethod)
     {
         try {
             $orderId = $this->placeManagement->placeOrder($quote_id);
@@ -161,7 +187,7 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
             $this->gbprimepayLogger->addCritical($e->getMessage());
         }
     }
-    protected function getOrderIdByIncrementId($incrementId)
+    public function getOrderIdByIncrementId($incrementId)
     {
         try {
             $orderModel = $this->orderFactory->create();
@@ -172,7 +198,7 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
             $this->gbprimepayLogger->addCritical($e->getMessage());
         }
     }
-    protected function getIncrementIdByOrderId($entityId)
+    public function getIncrementIdByOrderId($entityId)
     {
         try {
             $orderModel = $this->orderFactory->create();
@@ -222,7 +248,6 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
             $dataCode = $payment->getAdditionalInformation();
             $payment->setAdditionalInformation("transaction_id", $transaction_id);
             $payment->setAdditionalInformation("gbp_reference_no", $_gbpReferenceNum);
-            // $payment->setAdditionalInformation('method_title', $dataCode['method_title']);
             $payment->setLastTransId($transaction_id);
             $payment->setIsTransactionClosed(0);
             $payment->setShouldCloseParentTransaction(0);
@@ -267,6 +292,34 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
         $order->setIsCustomerNotified(true);
         $this->saveOrder($order);
     }
+    public function setOrderStatePendingStatus($orderId, $status, $order_note)
+    {
+        $order = $this->getQuoteByOrderId($orderId);
+        $order->setCanSendNewEmailFlag(false);
+        $order->setState($status);
+        $order->setStatus($status);
+        $order->addStatusToHistory($status, $order_note, false);
+        $order->setIsCustomerNotified(false);
+        $this->saveOrder($order);
+    }
+    public function failureOrder($orderId, $status, $order_note)
+    {
+        $order = $this->getQuoteByOrderId($orderId);
+        $order->setCanSendNewEmailFlag(false);
+        $order->setState($status);
+        $order->setStatus($status);
+        $order->addStatusToHistory($status, $order_note, true);
+        $order->setIsCustomerNotified(true);
+        $order->registerCancellation('Order canceled by customer')->save();
+        $quote = $this->quoteRepository->get($order->getQuoteId());
+            if ($quote->getId()){
+                $quote = $this->quoteRepository->get($order->getQuoteId());
+                $quote->setIsActive(1)->setReservedOrderId(null);
+                $this->quoteRepository->save($quote);
+            }
+
+        $this->saveOrder($order);
+    }
     public function saveOrder(\Magento\Sales\Api\Data\OrderInterface $order)
     {
         try {
@@ -283,7 +336,11 @@ abstract class Checkout extends \Magento\Framework\App\Action\Action
         $ResponseState = $order->getState();
         $ResponseStatus = $order->getStatus();
         if(($ResponseState == "processing") && ($ResponseStatus == "processing")){
-            $ResponseTransactionId = isset($dataCode['gbp_reference_no']) ? $dataCode['gbp_reference_no'] : '';
+            if($dataCode['gbp_reference_no']){
+                $ResponseTransactionId = $dataCode['gbp_reference_no'];
+            }else{
+                $ResponseTransactionId = 0;
+            }
             return $ResponseTransactionId;
         }else{
             return 0;

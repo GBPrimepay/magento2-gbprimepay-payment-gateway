@@ -31,6 +31,8 @@
             <!--/ko-->
         </div>
 
+        <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
+        <input data-bind='attr: {value: getFormKey()}' type="hidden" name="form_key"/>
         <!-- ko if: (hasCard())-->
         <select name="payment[credit_card_name]" class="select"
                 data-bind="attr: {id: getCode() + '-card-id', 'data-container': getCode() + '-card-id'},
@@ -43,7 +45,7 @@
                                 ">
         </select>
         <!-- /ko -->
-        <form class="form" data-bind="attr: {'id': getCode() + '-form'}, visible: isFormVisible">
+            <div class="payment-method-content" data-bind="class: 'fieldset payment ccard ' + getCode(), attr: {'id': getCode() + '-fieldset'}, visible: isFormVisible">
             <label data-bind="attr: {for: getCode() + '-card-id'}" class="label">
                 <h2><!-- ko text: $t('Payment Information')--><!-- /ko --></h2>
             </label>
@@ -71,8 +73,8 @@
                      ">
           </div>
       </div>
-        </form>
-        <p data-bind="html: getInstructionDirect()"></p>
+    </div></form>
+        <p data-bind="html: getInstructionDirect()" style="margin-top: 20px;"></p>
         <div class="checkout-agreements-block">
             <!-- ko foreach: $parent.getRegion('before-place-order') -->
             <!-- ko template: getTemplate() --><!-- /ko -->
@@ -94,6 +96,7 @@
             </div>
         </div>
 
+    
     </div>
 
 </div>

@@ -54,4 +54,9 @@
         </arguments>
     </virtualType>
 
+    <!-- CSRF Overwrite -->
+    <type name="Magento\Framework\App\Request\CsrfValidator">
+        <plugin name="gbprimepay_csrf_validator_skip" type="GBPrimePay\Payments\Plugin\CsrfValidatorSkip"/>
+    </type>
+
 </config>

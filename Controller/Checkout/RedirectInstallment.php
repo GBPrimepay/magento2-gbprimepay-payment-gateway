@@ -51,18 +51,21 @@ class RedirectInstallment extends \GBPrimePay\Payments\Controller\Checkout
 
                 $installment_detail = 'Charge for order ' . $_getIncrementId;
                 $installment_referenceNo = ''.substr(time(), 4, 5).'00'.$_orderId;
-                $installment_responseUrl = $this->_config->getresponseUrl('response_installment');
-                $installment_backgroundUrl = $this->_config->getresponseUrl('background_installment');
-                $installment_amount = $generateitem['amount'];
                 $installment_bankCode = $this->getRequest()->getParam('bc');
                 $installment_term = $this->getRequest()->getParam('tm');
+                
+                $installment_transaction_form = $this->getRequest()->getParam('form_key');
+                $installment_responseUrl = $this->_config->getresponseUrl('response_installment').'form_key/'.$installment_transaction_form;
+
+                $installment_backgroundUrl = $this->_config->getresponseUrl('background_installment');
+                $installment_amount = $generateitem['amount'];
                 $customer_full_name = $generateitem['customerName'];
                 $itemcustomerEmail = $generateitem['customerEmail'];
                 $installment_merchantDefined1 = $generateitem['merchantDefined1'];
                 $installment_merchantDefined2 = $generateitem['merchantDefined2'];
                 $installment_merchantDefined3 = $generateitem['merchantDefined3'];
-                $installment_merchantDefined4 = $installment_referenceNo;
-                $installment_merchantDefined5 = "";
+                $installment_merchantDefined4 = $generateitem['merchantDefined4'];
+                $installment_merchantDefined5 = $installment_referenceNo;
                 
                 $installment_url = rawurlencode($installment_url);
                 $installment_publicKey = rawurlencode($installment_publicKey);

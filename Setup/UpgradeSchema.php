@@ -36,7 +36,7 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
         $version = $context->getVersion();
         $setup->startSetup();
 
-        if (version_compare($version, '1.8.4') < 0) {
+        if (version_compare($context->getVersion(), '1.8.4') < 0) {
           $table = $setup->getConnection()->newTable(
               $setup->getTable($_prefix . 'purchase')
           )->addColumn(
@@ -86,6 +86,8 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
               'Purchase Order for GBPrimePay payment methods'
           );
           $setup->getConnection()->createTable($table);
+        }
+        if (version_compare($context->getVersion(), '2.0.0', '<')) {
         }
     }
 }

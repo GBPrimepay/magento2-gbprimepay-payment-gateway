@@ -13,12 +13,13 @@ $customerId = $block->customerSession->getCustomerId() ? '1' : '0';
 $baseUrl = $block->getBaseUrl();
 $assignQrcode = $block->getUrl("gbprimepay/checkout/eventsassignqrcode");
 $responseQrcode = $block->getUrl("gbprimepay/checkout/responseqrcode");
-$returnUrlQrcode = $configData->getresponseUrl('response_qrcode');
 $transaction = $block->getTransactionQrcode();
 $transaction_id = $block->getTransactionID();
 $transaction_key = $block->getTransactionKEY();
 $_transactionId = $this->getRequest()->getParam('key');
 $_orderId = $this->getRequest()->getParam('id');
+$_form_key = $transaction['key_id_qrcode'];
+$returnUrlQrcode = $configData->getresponseUrl('response_qrcode').'form_key/'.$_form_key;
 $img_checked = $configData->getImageURLs('checked');
 $img_logopay = $configData->getImageURLs('logopay');
 
@@ -39,9 +40,9 @@ if($transaction['order_complete_qrcode'] != 0){
 <script>
 require([
     'jquery',
-    'jquery/ui',
+    'prototype',
     'domReady!'
-], function($){
+], function ($, domReady) {
     'use strict';
     setInterval(function(){get_return_url($);},10000);
 });
@@ -61,12 +62,12 @@ window.location.href = '<?php echo $returnUrlQrcode; ?>';
 <script>
 require([
     'jquery',
-    'jquery/ui',
+    'prototype',
     'domReady!'
-], function($){
+], function ($, domReady) {
     'use strict';
     get_ajax_transaction($);
-    setInterval(function(){get_ajax_transaction($);},5000);
+    setInterval(function(){get_ajax_transaction($);},7000);
 });
 function get_ajax_transaction($){
 var urlresponseQrcode = '<?php echo $responseQrcode; ?>';
@@ -83,8 +84,10 @@ $.ajax({
     },
     success: function (response) {
         if (response.success) {
-            if (response.gbp_reference_no) {
-                window.location = window.location.pathname;
+            if(response.gbp_reference_no && response.gbp_reference_no * 1){
+                    var $orderFormkey = $("input[name='form_key']").val();  
+                    window.location.replace(window.location.pathname + '/form_key/' + $orderFormkey);
+                    window.console.log(response.gbp_reference_no);
             }
         }
     },

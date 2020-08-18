@@ -26,6 +26,23 @@ class Info extends \GBPrimePay\Payments\Controller\Checkout
 // $selected = $this->_config->setGBPMethod('selected_qrcode');
 
 
+            
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$requestInterface = $objectManager->get('Magento\Framework\App\RequestInterface');
+
+$routeName      = $requestInterface->getRouteName();
+$moduleName     = $requestInterface->getModuleName(); 
+$controllerName = $requestInterface->getControllerName(); 
+$actionName     = $requestInterface->getActionName();
+
+// echo "<pre>"; print_r($requestInterface->debug()); die("dead");
+
+            $this->gbprimepayLogger->addDebug("\r\n routeName //" . $routeName);
+            $this->gbprimepayLogger->addDebug("\r\n moduleName //" . $moduleName);
+            $this->gbprimepayLogger->addDebug("\r\n controllerName //" . $controllerName);
+            $this->gbprimepayLogger->addDebug("\r\n actionName //" . $actionName);
+
+
 
 echo "<br>GBPMethod-".$this->_config->getGBPMethod();
 

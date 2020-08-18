@@ -13,16 +13,20 @@ $customerId = $block->customerSession->getCustomerId() ? '1' : '0';
 $baseUrl = $block->getBaseUrl();
 $assignQrcredit = $block->getUrl("gbprimepay/checkout/eventsassignqrcredit");
 $responseQrcredit = $block->getUrl("gbprimepay/checkout/responseqrcredit");
-$returnUrlQrcredit = $configData->getresponseUrl('response_qrcredit');
 $transaction = $block->getTransactionQrcredit();
 $transaction_id = $block->getTransactionID();
 $transaction_key = $block->getTransactionKEY();
 $_transactionId = $this->getRequest()->getParam('key');
 $_orderId = $this->getRequest()->getParam('id');
+$_form_key = $transaction['key_id_qrcredit'];
+$returnUrlQrcredit = $configData->getresponseUrl('response_qrcredit').'form_key/'.$_form_key;
+
+$returnUrlQrcredit = $configData->getresponseUrl('response_qrcredit');
 $img_checked = $configData->getImageURLs('checked');
 $img_logopay = $configData->getImageURLs('logopay');
 
 if($transaction['order_complete_qrcredit'] != 0){
+    echo $block->getFormKey();
     echo '<div class="qrcredit_display" id="gbprimepay-qrcredit-payment-successful" style="display:block;">';
     echo '<center><br><br>';
     echo '<img src="' . $img_checked . '" style="padding:0px 0px 0px 0px;windth:100%;">';
@@ -39,9 +43,9 @@ if($transaction['order_complete_qrcredit'] != 0){
 <script>
 require([
     'jquery',
-    'jquery/ui',
+    'prototype',
     'domReady!'
-], function($){
+], function ($, domReady) {
     'use strict';
     setInterval(function(){get_return_url($);},10000);
 });
@@ -61,12 +65,12 @@ window.location.href = '<?php echo $returnUrlQrcredit; ?>';
 <script>
 require([
     'jquery',
-    'jquery/ui',
+    'prototype',
     'domReady!'
-], function($){
+], function ($, domReady) {
     'use strict';
     get_ajax_transaction($);
-    setInterval(function(){get_ajax_transaction($);},5000);
+    setInterval(function(){get_ajax_transaction($);},7000);
 });
 function get_ajax_transaction($){
 var urlresponseQrcredit = '<?php echo $responseQrcredit; ?>';
@@ -83,12 +87,13 @@ $.ajax({
     },
     success: function (response) {
         if (response.success) {
-            if (response.gbp_reference_no) {
-                window.location = window.location.pathname;
+            if(response.gbp_reference_no && response.gbp_reference_no * 1){
+                    var $orderFormkey = $("input[name='form_key']").val();  
+                    window.location.replace(window.location.pathname + '/form_key/' + $orderFormkey);
+                    window.console.log(response.gbp_reference_no);
             }
         }
-    },
-    error: function (response) {}
+    }
 });
 }
 </script>

@@ -93,12 +93,17 @@ define(
             getTransactionKEY: function () {
                 return window.gbprimepay.transaction_key;
             },
+            getFormKey: function () {
+                return window.checkoutConfig.formKey;
+            },
             getData:function () {
-                var isSave = $('#is-save').is(":checked");
+                var isSave = $('[name="payment[save]"]').is(':checked') ? 1 : 0;
+                var transaction_form = $("input[name='form_key']").val();
                 return {
                     'method': this.item.method,
                     'additional_data': {
                         'tokenid': this.selectedCard(),
+                        'transaction_form': transaction_form,
                         'cc_cid': this.creditCardVerificationNumber(),
                         'cc_ss_start_month': this.creditCardSsStartMonth(),
                         'cc_ss_start_year': this.creditCardSsStartYear(),
@@ -107,7 +112,7 @@ define(
                         'cc_exp_year': this.creditCardExpYear(),
                         'cc_exp_month': this.creditCardExpMonth(),
                         'cc_number': this.creditCardNumber(),
-                        'is_save': isSave ? "1" : "0"
+                        'is_save': isSave
                     }
                 };
             },
@@ -145,12 +150,13 @@ define(
                     dataType: "json",
                     success: function (response) {
                         if (response.success) {
-                            var $orderId = orderId;
+                            var $orderId = orderId; 
+                            var $orderFormkey = $("input[name='form_key']").val();          
                             if ($orderId == response.Tid) {
-                                window.location.replace(url.build('gbprimepay/checkout/redirect/id/' + response.Tid + '/tf/' + response.Tref + '/key/' + response.Tkey ));
+setTimeout(function () {
+    window.location.replace(url.build('gbprimepay/checkout/redirect/id/' + response.Tid + '/tf/' + response.Tref + '/key/' + response.Tkey ));
+}, 200);                                
                             }
-                            fullScreenLoader.stopLoader();
-                            self.isPlaceOrderActionAllowed(true);
                         }
                         if (response.error) {
                             fullScreenLoader.stopLoader();

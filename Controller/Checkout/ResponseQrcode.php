@@ -26,13 +26,10 @@ class ResponseQrcode extends \GBPrimePay\Payments\Controller\Checkout
 
               $_transactionId = $this->getRequest()->getParam('key');
               $_orderId = $this->getRequest()->getParam('id');
- 
               $orderId = $this->getIncrementIdByOrderId($_orderId);
               $order = $this->getQuoteByOrderId($orderId);
-              
               $ResponseQrcodeStatus = $order->getStatus();
               $ResponseQrcodeState = $order->getState();
-
             if ($order->hasInvoices()) {
                 $ResponseQrcodeStatus = $order->getStatus();
                 $ResponseQrcodeState = $order->getState();
@@ -44,8 +41,7 @@ class ResponseQrcode extends \GBPrimePay\Payments\Controller\Checkout
                   ]);
                 }else{
                   return $this->jsonFactory->create()->setData([
-                      'error' => true,
-                      'gbp_reference_no' => $_getOrderCompleteStatus
+                      'error' => true
                   ]);
                 }
             }else{
@@ -53,13 +49,6 @@ class ResponseQrcode extends \GBPrimePay\Payments\Controller\Checkout
                   'error' => true
               ]);
             }
-
-
-
-
-
-
-
           } catch (\Exception $exception) {
               return $this->jsonFactory->create()->setData([
                   'success' => false,

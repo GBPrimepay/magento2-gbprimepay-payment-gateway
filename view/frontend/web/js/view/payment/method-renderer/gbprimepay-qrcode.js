@@ -80,13 +80,18 @@ define(
             getTransactionKEY: function () {
                 return window.gbprimepay.transaction_key;
             },
+            getFormKey: function () {
+                return window.checkoutConfig.formKey;
+            },
             getData: function () {
                 var transaction_id = $("input[name='payment[transaction_id]']").val();
+                var transaction_form = $("input[name='form_key']").val();
                 var increment_id = $("input[name='payment[increment_id]']").val();
                 return {
                     'method': this.item.method,
                     'additional_data': {
                         'transaction_id': transaction_id,
+                        'transaction_form': transaction_form,
                         'increment_id': increment_id,
                     }
                 };
@@ -148,10 +153,15 @@ define(
                 return false;
             },
             afterPlaceOrder: function (orderId) {
+            this.isPlaceOrderActionAllowed(false);
             var $orderId = orderId;
+            var $orderKey = $("input[name='payment[transaction_key]']").val();     
+            var $orderFormkey = $("input[name='form_key']").val();          
             if ($orderId) {
                 if (this.item.method == 'gbprimepay_qrcode') {
-                window.location.replace(url.build('gbprimepay/checkout/pendingqrcode/id/' + $orderId + '/key/' + $("input[name='payment[transaction_key]']").val()));
+setTimeout(function () {
+    window.location.replace(url.build('gbprimepay/checkout/pendingqrcode/id/' + $orderId + '/key/' + $orderKey));
+}, 200);
                 }
             }
 

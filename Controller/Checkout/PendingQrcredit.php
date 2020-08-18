@@ -18,7 +18,7 @@ class PendingQrcredit extends \GBPrimePay\Payments\Controller\Checkout
     /**
      * Dispatch request
      *
-     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
+     * @return \Magento\Framework\Controller\ResultInterface\ResponseInterface
      * @throws \Magento\Framework\Exception\NotFoundException
      */
     public function execute()
@@ -28,6 +28,7 @@ class PendingQrcredit extends \GBPrimePay\Payments\Controller\Checkout
           $_orderId = $this->getRequest()->getParam('id');
           $orderId = $this->getIncrementIdByOrderId($_orderId);
           $order = $this->getQuoteByOrderId($orderId);
+          $payment = $order->getPayment();
           $_getEntityId = $order->getEntityId();
           $_getIncrementId = $order->getIncrementId();
           $_getOrderByIncrementId = $this->getOrderIdByIncrementId($_getIncrementId);
@@ -36,6 +37,7 @@ class PendingQrcredit extends \GBPrimePay\Payments\Controller\Checkout
 
                 $_transaction_id = $this->_config->getGBPTransactionID();
                 $_transaction_key = $this->_config->getGBPTransactionKEY();
+                $transaction_form = $payment->getAdditionalInformation("transaction_form");
                 $generateitem = $this->_config->getGBPTransactionITEM();
 
                 $ordercompletestatus = $this->getOrderCompleteStatus($_getOrderByEntityId);
@@ -44,6 +46,7 @@ class PendingQrcredit extends \GBPrimePay\Payments\Controller\Checkout
                     $this->checkoutRegistry->register('order_generate_qrcredit', 0, false);
                     $this->checkoutRegistry->register('order_complete_qrcredit', $ordercompletestatus, false);
                     $this->checkoutRegistry->register('order_id_qrcredit', $orderId, false);
+                    $this->checkoutRegistry->register('key_id_qrcredit', $transaction_form, false);
                 }else{
                     if ($this->_config->getEnvironment() === 'prelive') {
                         $url = Constant::URL_QRCREDIT_TEST;
@@ -73,7 +76,8 @@ class PendingQrcredit extends \GBPrimePay\Payments\Controller\Checkout
                             }else{
                                 $this->checkoutRegistry->register('order_generate_qrcredit', $callback, false);
                                 $this->checkoutRegistry->register('order_complete_qrcredit', 0, false);
-                                $this->checkoutRegistry->register('order_id_qrcredit', $orderId, false);          
+                                $this->checkoutRegistry->register('order_id_qrcredit', $orderId, false);   
+                                $this->checkoutRegistry->register('key_id_qrcredit', $transaction_form, false);       
                             }
                     }else {
                         return $this->resultRedirectFactory->create()->setPath('checkout/cart');

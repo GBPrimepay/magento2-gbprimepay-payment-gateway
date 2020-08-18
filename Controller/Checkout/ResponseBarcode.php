@@ -44,8 +44,7 @@ class ResponseBarcode extends \GBPrimePay\Payments\Controller\Checkout
                   ]);
                 }else{
                   return $this->jsonFactory->create()->setData([
-                      'error' => true,
-                      'gbp_reference_no' => $_getOrderCompleteStatus
+                      'error' => true
                   ]);
                 }
             }else{

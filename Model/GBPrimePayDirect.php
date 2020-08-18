@@ -165,13 +165,15 @@ class GBPrimePayDirect extends \Magento\Payment\Model\Method\Cc
         $_tmpData = $data->_data;
         $additionalDataRef = $_tmpData['additional_data'];
         $tokenid = isset($additionalDataRef['tokenid']) ? $additionalDataRef['tokenid'] : "";
-        $isSave = isset($additionalDataRef['isSave']) ? $additionalDataRef['isSave'] : "";
+        $isSave = isset($additionalDataRef['is_save']) ? $additionalDataRef['is_save'] : "";
         $ccnb = isset($additionalDataRef['cc_number']) ? $additionalDataRef['cc_number'] : "";
         $transaction_id = isset($additionalDataRef['transaction_id']) ? $additionalDataRef['transaction_id'] : "";
+        $transaction_form = isset($additionalDataRef['transaction_form']) ? $additionalDataRef['transaction_form'] : "";
         $infoInstance->setAdditionalInformation('data', json_encode($additionalDataRef));
         $infoInstance->setAdditionalInformation('isSave', $isSave);
         $infoInstance->setAdditionalInformation('tokenid', $tokenid);
         $infoInstance->setAdditionalInformation('transaction_id', $transaction_id);
+        $infoInstance->setAdditionalInformation('transaction_form', $transaction_form);
         return $this;
     }
 
@@ -193,7 +195,6 @@ class GBPrimePayDirect extends \Magento\Payment\Model\Method\Cc
     public function _createCustomer($payment)
     {
         try {
-
             /**
              * @var \Magento\Sales\Model\Order $order
              */
@@ -460,21 +461,24 @@ $getgbprimepay_customer_id= $payment->getAdditionalInformation('gbprimepay_custo
     {
         try {
 $gbprimepayCardId = $payment->getAdditionalInformation('gbprimepayCardId');
+$transaction_form = $payment->getAdditionalInformation('transaction_form');
+$tokenid = $payment->getAdditionalInformation('tokenid');
 $order = $payment->getOrder();
-
 $customer_full_name = $order->getBillingAddress()->getFirstname() . ' ' . $order->getBillingAddress()->getLastname();
 $callgetMerchantId = $this->_config->getMerchantId();
 $callgenerateID = $this->_config->generateID();
+$generateitem = $this->_config->getGBPTransactionITEM();
 
 $_orderId = $order->getEntityId();
 $_incrementId = $order->getIncrementId();
 $itemamount = number_format((($amount * 100)/100), 2, '.', '');
 $itemdetail = 'Charge for order ' . $_incrementId;
 $itemReferenceId = ''.substr(time(), 4, 5).'00'.$_orderId;
+$itemformkey = $generateitem['merchantDefined4'];
 $itemcustomerEmail = $order->getCustomerEmail();
 $itemmagento_customer_id = $payment->getOrder()->getCustomerId();
 $otpCode = 'Y';
-$otpResponseUrl = $this->_config->getresponseUrl('response_direct');
+$otpResponseUrl = $this->_config->getresponseUrl('response_direct').'form_key/'.$transaction_form;
 $otpBackgroundUrl = $this->_config->getresponseUrl('background_direct');
 
 if ($this->_config->getEnvironment() === 'prelive') {
@@ -483,23 +487,11 @@ if ($this->_config->getEnvironment() === 'prelive') {
     $url = Constant::URL_CHARGE_LIVE;
 }
 
-$field = "{\r\n\"amount\": $itemamount,\r\n\"referenceNo\": \"$itemReferenceId\",\r\n\"detail\": \"$itemdetail\",\r\n\"customerName\": \"$customer_full_name\",\r\n\"customerEmail\": \"$itemcustomerEmail\",\r\n\"merchantDefined1\": \"$callgenerateID\",\r\n\"merchantDefined2\": null,\r\n\"merchantDefined3\": \"$itemReferenceId\",\r\n\"merchantDefined4\": null,\r\n\"merchantDefined5\": null,\r\n\"card\": {\r\n\"token\": \"$gbprimepayCardId\"\r\n},\r\n\"otp\": \"$otpCode\",\r\n\"responseUrl\": \"$otpResponseUrl\",\r\n\"backgroundUrl\": \"$otpBackgroundUrl\"\r\n}\r\n";
+$field = "{\r\n\"amount\": $itemamount,\r\n\"referenceNo\": \"$itemReferenceId\",\r\n\"detail\": \"$itemdetail\",\r\n\"customerName\": \"$customer_full_name\",\r\n\"customerEmail\": \"$itemcustomerEmail\",\r\n\"merchantDefined1\": \"$callgenerateID\",\r\n\"merchantDefined2\": null,\r\n\"merchantDefined3\": \"$itemReferenceId\",\r\n\"merchantDefined4\": \"$itemformkey\",\r\n\"merchantDefined5\": null,\r\n\"card\": {\r\n\"token\": \"$gbprimepayCardId\"\r\n},\r\n\"otp\": \"$otpCode\",\r\n\"responseUrl\": \"$otpResponseUrl\",\r\n\"backgroundUrl\": \"$otpBackgroundUrl\"\r\n}\r\n";
 
 
 $callback = $this->_config->sendCHARGECurl("$url", $field, 'POST');
 
-
-if ($callback['resultCode']=="00") {
-    $isLogin = $this->customerSession->isLoggedIn();
-    if ($isLogin) {
-        $cardModel = $this->cardFactory->create();
-        $getcardDataSave= $payment->getAdditionalInformation('cardDataSave');
-        if($getcardDataSave){
-            $cardModel->setData($getcardDataSave);
-            $cardModel->save();
-        }
-    }
-}
 $getgbprimepay_customer_id= $payment->getAdditionalInformation('gbprimepay_customer_id');
 
 $gbpReferenceNo_action = isset($callback['gbpReferenceNo']) ? $callback['gbpReferenceNo'] : '';
@@ -563,6 +555,22 @@ $item = array(
         }
     }
 
+    
+
+    public function _storedcard($payment, $amount)
+    {
+        $cardModel = $this->cardFactory->create();
+        $getcardDataSave = $payment->getAdditionalInformation('cardDataSave');
+        $getcardIsSave = $payment->getAdditionalInformation('isSave');
+        if($getcardDataSave){
+            if($getcardIsSave){
+                $cardModel->setData($getcardDataSave);
+                $cardModel->save();
+            }
+        }
+        return $this;
+    }
+
     /**
      * @param \Magento\Payment\Model\InfoInterface|\Magento\Sales\Model\Order\Payment $payment
      */
@@ -593,14 +601,10 @@ if ($this->_config->getEnvironment() === 'prelive') {
 
 $field = "{\r\n\"amount\": $itemamount,\r\n\"referenceNo\": \"$itemReferenceId\",\r\n\"detail\": \"$itemdetail\",\r\n\"customerName\": \"$customer_full_name\",\r\n\"customerEmail\": \"$itemcustomerEmail\",\r\n\"merchantDefined1\": \"$callgenerateID\",\r\n\"merchantDefined2\": null,\r\n\"merchantDefined3\": \"$itemReferenceId\",\r\n\"merchantDefined4\": null,\r\n\"merchantDefined5\": null,\r\n\"card\": {\r\n\"token\": \"$gbprimepayCardId\"\r\n},\r\n\"otp\": \"$otpCode\",\r\n\"responseUrl\": \"$otpResponseUrl\",\r\n\"backgroundUrl\": \"$otpBackgroundUrl\"\r\n}\r\n";
 
-// if ($this->_config->getCanDebug()) {
-//     $this->gbprimepayLogger->addDebug("Debug field //" . print_r($field, true));
-// }
-
 $callback = $this->_config->sendCHARGECurl("$url", $field, 'POST');
 
 if ($this->_config->getCanDebug()) {
-    $this->gbprimepayLogger->addDebug("Debug sendCHARGECurl callback //" . print_r($callback, true));
+    $this->gbprimepayLogger->addDebug("Debug _capture sendCHARGECurl callback //" . print_r($callback, true));
 }
 
 if ($callback['resultCode']=="00") {

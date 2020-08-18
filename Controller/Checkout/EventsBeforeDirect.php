@@ -33,6 +33,7 @@ class EventsBeforeDirect extends \GBPrimePay\Payments\Controller\Checkout
               
               $_transaction_id = $this->_config->getGBPTransactionID();
               $_transaction_key = $this->_config->getGBPTransactionKEY();
+              $_form_key = $this->_config->getGBPFormKEY();
               $_transaction_amt = $this->_config->getGBPTransactionAMT();
               $isLogin = $this->customerSession->isLoggedIn();
               if ($isLogin) {
@@ -56,6 +57,7 @@ class EventsBeforeDirect extends \GBPrimePay\Payments\Controller\Checkout
                   'success' => true,
                   'transaction_id' => $_transaction_id,
                   'transaction_key' => $_transaction_key,
+                  'form_key' => $_form_key,
                   'selected' => 'selected_direct'
               ]);
 

@@ -86,10 +86,31 @@ class Config extends \Magento\Framework\View\Element\Template
         return 'data:application/pdf;base64,JVBERi0xLjcKJeLjz9MKMSAwIG9iago8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFI+PgplbmRvYmoKMiAwIG9iago8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PgplbmRvYmoKMyAwIG9iago8PC9UeXBlL1BhZ2UvUGFyZW50IDIgMCBSL01lZGlhQm94WzAgMCA2MTIgNzkyXS9SZXNvdXJjZXM8PD4+Pj4KZW5kb2JqCnhyZWYKMCA0CjAwMDAwMDAwMDAgNjU1MzUgZg0KMDAwMDAwMDAxNSAwMDAwMCBuDQowMDAwMDAwMDYwIDAwMDAwIG4NCjAwMDAwMDAxMTEgMDAwMDAgbg0KdHJhaWxlcgo8PC9TaXplIDQvUm9vdCAxIDAgUj4+CnN0YXJ0eHJlZgoxOTAKJSVFT0YK';
     }
 
+    public function getTransactionDirect() {        
+        $transaction['referenceNo'] = $this->checkoutRegistry->registry('referenceNo');
+        $transaction['gbpReferenceNo'] = $this->checkoutRegistry->registry('gbpReferenceNo');
+        $transaction['amount'] = $this->checkoutRegistry->registry('amount');
+        $transaction['orderId'] = $this->checkoutRegistry->registry('orderId');
+        $transaction['transaction_form'] = $this->checkoutRegistry->registry('transaction_form');
+        $transaction['payStatus'] = $this->checkoutRegistry->registry('payStatus');
+        return $transaction;
+    }
+
+    public function getTransactionInstallment() {        
+        $transaction['referenceNo'] = $this->checkoutRegistry->registry('referenceNo');
+        $transaction['gbpReferenceNo'] = $this->checkoutRegistry->registry('gbpReferenceNo');
+        $transaction['amount'] = $this->checkoutRegistry->registry('amount');
+        $transaction['orderId'] = $this->checkoutRegistry->registry('orderId');
+        $transaction['transaction_form'] = $this->checkoutRegistry->registry('transaction_form');
+        $transaction['payStatus'] = $this->checkoutRegistry->registry('payStatus');
+        return $transaction;
+    }
+
     public function getTransactionQrcode() {
         $transaction['order_generate_qrcode'] = $this->checkoutRegistry->registry('order_generate_qrcode');
         $transaction['order_complete_qrcode'] = $this->checkoutRegistry->registry('order_complete_qrcode');
         $transaction['order_id_qrcode'] = $this->checkoutRegistry->registry('order_id_qrcode');
+        $transaction['key_id_qrcode'] = $this->checkoutRegistry->registry('key_id_qrcode');
         return $transaction;
     }
 
@@ -97,6 +118,7 @@ class Config extends \Magento\Framework\View\Element\Template
         $transaction['order_generate_qrcredit'] = $this->checkoutRegistry->registry('order_generate_qrcredit');
         $transaction['order_complete_qrcredit'] = $this->checkoutRegistry->registry('order_complete_qrcredit');
         $transaction['order_id_qrcredit'] = $this->checkoutRegistry->registry('order_id_qrcredit');
+        $transaction['key_id_qrcredit'] = $this->checkoutRegistry->registry('key_id_qrcredit');
         return $transaction;
     }
 
@@ -104,6 +126,7 @@ class Config extends \Magento\Framework\View\Element\Template
         $transaction['order_generate_barcode'] = $this->checkoutRegistry->registry('order_generate_barcode');
         $transaction['order_complete_barcode'] = $this->checkoutRegistry->registry('order_complete_barcode');
         $transaction['order_id_barcode'] = $this->checkoutRegistry->registry('order_id_barcode');
+        $transaction['key_id_barcode'] = $this->checkoutRegistry->registry('key_id_barcode');
         return $transaction;
     }
 }

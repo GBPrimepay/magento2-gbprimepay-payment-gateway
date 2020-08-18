@@ -243,11 +243,9 @@ infotxt += '</table>';
             return this
         }
         window.addEventListener('load', function(){
-            window.console.log('load addEventListener');
             $('[data-role="toselect"]').each(function () {
-                var $toSelect = $(this)
-                Plugin.call($toSelect, $toSelect.data())
-                window.console.log('load select');
+                var $toSelect = $(this);
+                Plugin.call($toSelect, $toSelect.data());
             })
         })
         function currency_format(num) {

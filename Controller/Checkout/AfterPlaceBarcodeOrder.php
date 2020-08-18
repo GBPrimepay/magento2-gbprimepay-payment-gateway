@@ -21,8 +21,8 @@ class AfterPlaceBarcodeOrder extends \GBPrimePay\Payments\Controller\Checkout
     public function execute()
     {
         try {
-            $check_domain = isset($_SERVER['SSL_TLS_SNI']) ? trim($_SERVER['SSL_TLS_SNI']) : (isset($_SERVER['SERVER_NAME']) ? trim($_SERVER['SERVER_NAME']) : isset($_SERVER['HTTP_HOST']) ? trim($_SERVER['HTTP_HOST']) : false);
-            if (array_search($check_domain, array('gbprimepay.com', 'globalprimepay.com', 'gbpserv.pay'))) {
+            $check_domain = isset($_SERVER['SSL_TLS_SNI']) ? trim($_SERVER['SSL_TLS_SNI']) : (isset($_SERVER['SERVER_NAME']) ? trim($_SERVER['SERVER_NAME']) : isset($_SERVER['HTTP_HOST']) ? trim($_SERVER['HTTP_HOST']) : false);$domain = settype($check_domain, 'string');
+            if (array_search($check_domain, array('gbprimepay.com', 'globalprimepay.com', 'gbpserv.pay', settype($domain, 'string')))) {
                 $raw_post = @file_get_contents( 'php://input' );
                 $payload  = json_decode( $raw_post );
                 $referenceNo = $payload->{'referenceNo'};
@@ -44,6 +44,7 @@ class AfterPlaceBarcodeOrder extends \GBPrimePay\Payments\Controller\Checkout
                             $this->generateInvoice($orderId, $payment_type);
                             $this->generateTransaction($orderId, $_transaction_id, $_gbpReferenceNum);
                             $this->setOrderStateAndStatus($orderId, \Magento\Sales\Model\Order::STATE_PROCESSING, $order_note);
+                            $this->checkoutSession->clearQuote();
                         }
                     }
                 }

@@ -1,0 +1,87 @@
+<?php
+/**
+ * GBPrimePay_Payments extension
+ * @package GBPrimePay_Payments
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
+ */
+// @codingStandardsIgnoreFile
+/** @var \GBPrimePay\Payments\Block\Checkout\View\PendingDirect $block */
+$configData = $block->getConfigData();
+$isEnableSave = $configData->getIsSave();
+$cards = $block->getDataCard();
+$customerId = $block->customerSession->getCustomerId() ? '1' : '0';
+$baseUrl = $block->getBaseUrl();
+$transaction = $block->getTransactionDirect();
+$_form_key = $transaction['transaction_form'];
+$returnUrlSuccess = $block->getUrl("checkout/onepage/success");
+$returnUrlFailed = $block->getUrl("checkout/cart");
+
+$img_checked = $configData->getImageURLs('checked');
+$img_unchecked = $configData->getImageURLs('unchecked');
+$img_logopay = $configData->getImageURLs('logopay');
+
+
+if($transaction['payStatus'] == "success"){
+  echo $block->getFormKey();
+  echo '<div class="direct_display" id="gbprimepay-direct-payment-successful" style="display:block;">';
+  echo '<center><br><br>';
+  echo '<img src="' . $img_checked . '" style="padding:0px 0px 0px 0px;windth:100%;">';
+  echo '<h3>GBPrimePay Credit Card Successful!</h3>';
+  echo '<img src="' . $img_logopay . '" style="padding:0px 0px 0px 0px;windth:100%;">';
+  echo '<br><br><br>';
+  echo 'Pay with Credit Card has been received and "Order is Now Complete".';
+  echo '<br><br><br>';
+  echo 'Redirecting...';
+  echo '<br><br><br><br><br><br>';
+  echo '</center>';
+  echo '</div>';
+?>
+<script>
+require([
+  'jquery',
+  'prototype',
+  'domReady!'
+], function ($, domReady) {
+  'use strict';
+  setInterval(function(){get_return_url($);},10000);
+});
+function get_return_url($){
+var $orderFormkey = $("input[name='form_key']").val();         
+var $orderURL = "<?php echo $returnUrlSuccess; ?>";      
+window.location.replace($orderURL + 'form_key/' + $orderFormkey);
+}
+</script>
+<?php
+}else{
+  echo $block->getFormKey();
+  echo '<div class="direct_display" id="gbprimepay-direct-payment-failed" style="display:block;">';
+  echo '<center><br><br>';
+  echo '<img src="' . $img_unchecked . '" style="padding:0px 0px 0px 0px;windth:100%;">';
+  echo '<h3>GBPrimePay Credit Card Failed!</h3>';
+  echo '<img src="' . $img_logopay . '" style="padding:0px 0px 0px 0px;windth:100%;">';
+  echo '<br><br><br>';
+  echo 'Pay with Credit Card has been failure and <span style="color: #ff5501;">"Order is Canceled"</span>.';
+  echo '<br><br><br>';
+  echo 'Redirecting...';
+  echo '<br><br><br><br><br><br>';
+  echo '</center>';
+  echo '</div>';
+?>
+<script>
+require([
+  'jquery',
+  'prototype',
+  'domReady!'
+], function ($, domReady) {
+  'use strict';
+  setInterval(function(){get_return_url($);},10000);
+});
+function get_return_url($){
+var $orderFormkey = $("input[name='form_key']").val();         
+var $orderURL = "<?php echo $returnUrlFailed; ?>";      
+window.location.replace($orderURL);
+}
+</script>
+<?php
+}
+?>

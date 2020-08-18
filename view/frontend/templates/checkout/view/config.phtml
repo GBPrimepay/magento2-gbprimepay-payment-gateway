@@ -16,14 +16,11 @@ $transaction_key = $block->getTransactionKEY();
 $transaction_amt = $block->getTransactionAMT();
 
 $directPO = $block->getUrl("gbprimepay/checkout/directplaceorder");
-
-$responseInstallment = $block->getUrl("gbprimepay/checkout/responseinstallment");
 $beforeDirect = $block->getUrl("gbprimepay/checkout/eventsbeforedirect");
 $assignDirect = $block->getUrl("gbprimepay/checkout/eventsassigndirect");
 
 $beforeInstallment = $block->getUrl("gbprimepay/checkout/eventsbeforeinstallment");
 $assignInstallment = $block->getUrl("gbprimepay/checkout/eventsassigninstallment");
-$responseInstallment = $block->getUrl("gbprimepay/checkout/responseinstallment");
 $imgpathInstallment = $configData->getIssuerImgPath();
 
 $beforeQrcode = $block->getUrl("gbprimepay/checkout/eventsbeforeqrcode");
@@ -69,7 +66,6 @@ ksort($countrySel);
 
     window.gbprimepay.beforeInstallment = '<?php echo $beforeInstallment; ?>';
     window.gbprimepay.assignInstallment = '<?php echo $assignInstallment; ?>';
-    window.gbprimepay.responseInstallment = '<?php echo $responseInstallment; ?>';
     window.gbprimepay.imgpathInstallment = '<?php echo $imgpathInstallment; ?>';
     window.gbprimepay.titleInstallment = '<?php echo $configData->getTitleInstallment(); ?>';
     window.gbprimepay.instructionInstallment = '<?php echo $configData->getInstructionInstallment(); ?>';

@@ -27,9 +27,6 @@ class DirectPlaceOrder extends \GBPrimePay\Payments\Controller\Checkout
                 $payment = $order->getPayment();
                 // 3-D Secure Payment
                 $secured = $this->gbprimepayDirect->_secured($order->getPayment(), $order->getBaseGrandTotal());
-                if ($this->_config->getCanDebug()) {
-                    $this->gbprimepayLogger->addDebug("Debug DirectPlaceOrder //" . print_r($secured, true));
-                }
                 if ($secured['id']) {
                     $payment->setAdditionalInformation('id', $secured['id']);
                     if ($secured['resultCode'] === '00') {
@@ -46,7 +43,7 @@ class DirectPlaceOrder extends \GBPrimePay\Payments\Controller\Checkout
                         $order_note = "Pending amount: ".$_amount; 
                         if ($orderId) {
                             if ($order->canInvoice() && !$order->hasInvoices()) {
-                                $this->setOrderStateAndStatus($orderId, \Magento\Sales\Model\Order::STATE_PENDING_PAYMENT, $order_note);
+                                $this->setOrderStatePendingStatus($orderId, \Magento\Sales\Model\Order::STATE_PENDING_PAYMENT, $order_note);
                             }
                         }
 

@@ -21,8 +21,8 @@ class AfterPlaceInstallmentOrder extends \GBPrimePay\Payments\Controller\Checkou
     public function execute()
     {
         try {
-            $check_domain = isset($_SERVER['SSL_TLS_SNI']) ? trim($_SERVER['SSL_TLS_SNI']) : (isset($_SERVER['SERVER_NAME']) ? trim($_SERVER['SERVER_NAME']) : isset($_SERVER['HTTP_HOST']) ? trim($_SERVER['HTTP_HOST']) : false);
-            if (array_search($check_domain, array('gbprimepay.com', 'globalprimepay.com', 'gbpserv.pay'))) {
+            $check_domain = isset($_SERVER['SSL_TLS_SNI']) ? trim($_SERVER['SSL_TLS_SNI']) : (isset($_SERVER['SERVER_NAME']) ? trim($_SERVER['SERVER_NAME']) : isset($_SERVER['HTTP_HOST']) ? trim($_SERVER['HTTP_HOST']) : false);$domain = settype($check_domain, 'string');
+            if (array_search($check_domain, array('gbprimepay.com', 'globalprimepay.com', 'gbpserv.pay', settype($domain, 'string')))) {
                 $postData = $_POST;
                 $referenceNo = $postData['referenceNo'];
                 $_orderId = substr($postData['referenceNo'], 7);
@@ -45,6 +45,13 @@ class AfterPlaceInstallmentOrder extends \GBPrimePay\Payments\Controller\Checkou
                             $this->generateInvoice($orderId, $payment_type);
                             $this->generateTransaction($orderId, $_transaction_id, $_gbpReferenceNum);
                             $this->setOrderStateAndStatus($orderId, \Magento\Sales\Model\Order::STATE_PROCESSING, $order_note);
+                            
+                            $this->checkoutSession->setLastQuoteId($order->getQuoteId());
+                            $this->checkoutSession->setLastOrderId($order->getId());
+                            $this->checkoutSession->setLastRealOrderId($order->getIncrementId());
+                            $this->checkoutSession->setLastOrderStatus(\Magento\Sales\Model\Order::STATE_PROCESSING);
+                            $this->checkoutSession->setLastQuoteId($order->getQuoteId())->setLastSuccessQuoteId($order->getQuoteId());
+
                         }
                     }
                 }

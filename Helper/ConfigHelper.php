@@ -14,6 +14,7 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Helper\Context;
 use GBPrimePay\Payments\Helper\Constant as Constant;
 use Magento\Mtf\Util\Command\Cli;
+use Magento\Framework\Data\Form\FormKey;
 
 class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -21,11 +22,13 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_urlBuilder;
     protected $_assetRepo;
     protected $checkoutSession;
+    protected $_formKey;
 
     public function __construct(
         Context $context,
         EncryptorInterface $encryptorInterface,
         UrlInterface $urlBuilder,
+        FormKey $formKey,
         Repository $assetRepo,
         Session $checkoutSession
     ) {
@@ -33,6 +36,7 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
         parent::__construct($context);
         $this->_encryptor = $encryptorInterface;
         $this->_urlBuilder = $urlBuilder;
+        $this->_formKey = $formKey;
         $this->_assetRepo = $assetRepo;
         $this->checkoutSession = $checkoutSession;
     }
@@ -58,6 +62,9 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
         }
         if($images=='checked'){
             $images = $this->_assetRepo->getUrl("GBPrimePay_Payments::images/checked.png");
+        }
+        if($images=='unchecked'){
+            $images = $this->_assetRepo->getUrl("GBPrimePay_Payments::images/unchecked.png");
         }
         if($images=='logopay'){
             $images = $this->_assetRepo->getUrl("GBPrimePay_Payments::images/gbprimepay-logo-pay.png");
@@ -675,13 +682,13 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
     {
 
         if($routeurl=='response_direct'){
-          $routeurl = $this->_urlBuilder->getUrl("checkout/onepage/success");
+          $routeurl = $this->_urlBuilder->getUrl("gbprimepay/checkout/pendingdirect");
         }
         if($routeurl=='background_direct'){
           $routeurl = $this->_urlBuilder->getUrl("gbprimepay/checkout/afterplacedirectorder");
         }
         if($routeurl=='response_installment'){
-        $routeurl = $this->_urlBuilder->getUrl("checkout/onepage/success");
+        $routeurl = $this->_urlBuilder->getUrl("gbprimepay/checkout/pendinginstallment");
         }
         if($routeurl=='background_installment'){
         $routeurl = $this->_urlBuilder->getUrl("gbprimepay/checkout/afterplaceinstallmentorder");
@@ -1127,6 +1134,15 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
     public function getGBPTransactionKEY()
     {
         return $this->checkoutSession->getGBPTransactionKEY();
+    }
+    public function setGBPFormKEY($value)
+    {
+        $this->checkoutSession->setGBPFormKEY($value);
+        return true;
+    }
+    public function getGBPFormKEY()
+    {
+        return $this->checkoutSession->getGBPFormKEY();
     }
     public function setGBPTransactionITEM($value)
     {

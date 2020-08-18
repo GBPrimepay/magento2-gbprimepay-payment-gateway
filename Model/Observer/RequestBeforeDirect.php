@@ -94,6 +94,8 @@ public function __construct(
             "merchantDefined1" => $_transaction_key,
             "merchantDefined2" => $itemcustomer_id,
             "merchantDefined3" => $itemquoteno,
+            "merchantDefined4" => '',
+            "merchantDefined5" => '',
         );
         $this->_config->setGBPTransactionITEM($_item);
         $this->_config->setGBPTransactionKEY($_transaction_key);

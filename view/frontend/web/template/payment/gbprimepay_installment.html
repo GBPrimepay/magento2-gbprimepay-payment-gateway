@@ -137,7 +137,8 @@
           </div>
           </div>
             </fieldset>
-              </form>
+              <input data-bind='attr: {value: getFormKey()}' type="hidden" name="form_key"/>
+            </form>
             <p data-bind="html: getInstructionInstallment()"></p>
             <div class="checkout-agreements-block">
                 <!-- ko foreach: $parent.getRegion('before-place-order') -->

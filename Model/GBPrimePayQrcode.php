@@ -105,7 +105,9 @@ class GBPrimePayQrcode extends \Magento\Payment\Model\Method\AbstractMethod
         $_tmpData = $data->_data;
         $additionalDataRef = $_tmpData['additional_data'];
         $transaction_id = isset($additionalDataRef['transaction_id']) ? $additionalDataRef['transaction_id'] : "";
+        $transaction_form = isset($additionalDataRef['transaction_form']) ? $additionalDataRef['transaction_form'] : "";
         $infoInstance->setAdditionalInformation('transaction_id', $transaction_id);
+        $infoInstance->setAdditionalInformation('transaction_form', $transaction_form);
         return $this;
     }
 

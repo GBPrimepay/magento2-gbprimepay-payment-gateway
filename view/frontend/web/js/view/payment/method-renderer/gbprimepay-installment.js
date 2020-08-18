@@ -95,16 +95,21 @@ define(
             getTransactionKEY: function () {
                 return window.gbprimepay.transaction_key;
             },
+            getFormKey: function () {
+                return window.checkoutConfig.formKey;
+            },
             getTransactionAMT: function () {
                 return window.gbprimepay.transaction_amt;
             },
             getData: function () {
                 var transaction_id = $("input[name='payment[transaction_id]']").val();
+                var transaction_form = $("input[name='form_key']").val();
                 var increment_id = $("input[name='payment[increment_id]']").val();
                 return {
                     'method': this.item.method,
                     'additional_data': {
                         'transaction_id': transaction_id,
+                        'transaction_form': transaction_form,
                         'increment_id': increment_id,
                     }
                 };
@@ -212,13 +217,17 @@ define(
                 return false;
             },
             afterPlaceOrder: function (orderId) {
-            var $orderId = orderId;            
-            var $orderKey = $("input[name='payment[transaction_key]']").val();            
+            var $orderId = orderId; 
+            this.isPlaceOrderActionAllowed(false);           
+            var $orderKey = $("input[name='payment[transaction_key]']").val(); 
+            var $orderFormkey = $("input[name='form_key']").val();           
             var $orderBankcode = $("select[name='payment[issuers_bankcode]'] option:selected").val();          
             var $orderTerm = $("select[name='payment[issuers_term]'] option:selected").val();
             if ($orderId) {
                 if (this.item.method == 'gbprimepay_installment') {
-                window.location.replace(url.build('gbprimepay/checkout/redirectinstallment/id/' + $orderId + '/bc/' + $orderBankcode + '/tm/' + $orderTerm + '/key/' + $orderKey ));
+setTimeout(function () {
+    window.location.replace(url.build('gbprimepay/checkout/redirectinstallment/id/' + $orderId + '/bc/' + $orderBankcode + '/tm/' + $orderTerm + '/form_key/' + $orderFormkey + '/key/' + $orderKey ));
+}, 200);
                 }
             }
 

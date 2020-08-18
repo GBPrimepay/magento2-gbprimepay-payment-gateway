@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+/*
+ * Copyright © 2020 GBPrimePay Payments.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <head>
+      <title>Pay with Credit Card Installment</title>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="GBPrimePay\Payments\Block\Checkout\View\Config" template="GBPrimePay_Payments::checkout/view/pendinginstallment.phtml" cacheable="false"/>
+        </referenceContainer>
+    </body>
+</page>
