@@ -73,6 +73,8 @@ class RedirectInstallment extends \GBPrimePay\Payments\Controller\Checkout
                 $installment_responseUrl = rawurlencode($installment_responseUrl);
                 $installment_backgroundUrl = rawurlencode($installment_backgroundUrl);
                 $installment_detail = rawurlencode($installment_detail);
+                $installment_customerName = rawurlencode($customer_full_name);
+                $installment_customerEmail = rawurlencode($itemcustomerEmail);
                 $installment_amount = rawurlencode($installment_amount);
                 $installment_bankCode = rawurlencode($installment_bankCode);
                 $installment_term = rawurlencode($installment_term);
@@ -100,6 +102,8 @@ $res =  '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">' .
           '<input type="hidden" name="responseUrl" value="'. rawurldecode($installment_responseUrl).'">' .
           '<input type="hidden" name="backgroundUrl" value="'. rawurldecode($installment_backgroundUrl).'">' .
           '<input type="hidden" name="detail" value="'. rawurldecode($installment_detail).'">' .
+          '<input type="hidden" name="customerName" value="'. rawurldecode($installment_customerName).'">' .
+          '<input type="hidden" name="customerEmail" value="'. rawurldecode($installment_customerEmail).'">' .
           '<input type="hidden" name="amount" value="'. rawurldecode($installment_amount).'">' .
           '<input type="hidden" name="bankCode" value="'. rawurldecode($installment_bankCode).'">' .
           '<input type="hidden" name="term" value="'. rawurldecode($installment_term).'">' .
