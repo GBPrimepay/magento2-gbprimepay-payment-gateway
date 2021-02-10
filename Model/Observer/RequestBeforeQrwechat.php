@@ -11,7 +11,7 @@ use Magento\Framework\Event\ObserverInterface;
 use GBPrimePay\Payments\Helper\Constant;
 
 
-class RequestBeforeBarcode implements ObserverInterface
+class RequestBeforeQrwechat implements ObserverInterface
 {
 
 
@@ -70,11 +70,13 @@ public function __construct(
     $shipamount = $order->getQuote()->getShippingAddress()->getShippingAmount();
     $customer_id = $order->getQuote()->getCustomerId();
         if ($this->_config->getEnvironment() === 'prelive') {
-            $url = Constant::URL_BARCODE_TEST;
-            $itemtoken = $this->_config->getTestTokenKey();
+            $url = Constant::URL_QRWECHAT_TEST;
+            $itempublicKey = $this->_config->getTestPublicKey();
+            $itemsecret_key = $this->_config->getTestSecretKey();
         } else {
-            $url = Constant::URL_BARCODE_LIVE;
-            $itemtoken = $this->_config->getLiveTokenKey();
+            $url = Constant::URL_QRWECHAT_LIVE;
+            $itempublicKey = $this->_config->getLivePublicKey();
+            $itemsecret_key = $this->_config->getLiveSecretKey();
         }
         $customer_full_name = $order->getQuote()->getBillingAddress()->getFirstname() . ' ' . $order->getQuote()->getBillingAddress()->getLastname();
         $itemshippingId = $order->getQuote()->getShippingAddress()->getcustomer_address_id();
@@ -84,8 +86,8 @@ public function __construct(
         $itemshippingrate = number_format((($shipamount * 100)/100), 2, '.', '');
         $itemreferenceno = $transaction_quoteid;
         $itemquoteno = $_transaction_id;
-        $itemresponseurl = $this->_config->getresponseUrl('response_barcode');
-        $itembackgroundurl = $this->_config->getresponseUrl('background_barcode');
+        $itemresponseurl = $this->_config->getresponseUrl('response_qrwechat');
+        $itembackgroundurl = $this->_config->getresponseUrl('background_qrwechat');
         $itemcustomerEmail = $order->getQuote()->getCustomerEmail();        
         $itemcustomerAddress = '';
         $itemcustomerAddress .= '' . $customer_full_name .' ';

@@ -81,6 +81,11 @@ class Config extends \Magento\Framework\View\Element\Template
         return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=';
     }
 
+    public function getGenerateQrwechat()
+    {
+        return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=';
+    }
+
     public function getGenerateBarcode()
     {
         return 'data:application/pdf;base64,JVBERi0xLjcKJeLjz9MKMSAwIG9iago8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFI+PgplbmRvYmoKMiAwIG9iago8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PgplbmRvYmoKMyAwIG9iago8PC9UeXBlL1BhZ2UvUGFyZW50IDIgMCBSL01lZGlhQm94WzAgMCA2MTIgNzkyXS9SZXNvdXJjZXM8PD4+Pj4KZW5kb2JqCnhyZWYKMCA0CjAwMDAwMDAwMDAgNjU1MzUgZg0KMDAwMDAwMDAxNSAwMDAwMCBuDQowMDAwMDAwMDYwIDAwMDAwIG4NCjAwMDAwMDAxMTEgMDAwMDAgbg0KdHJhaWxlcgo8PC9TaXplIDQvUm9vdCAxIDAgUj4+CnN0YXJ0eHJlZgoxOTAKJSVFT0YK';
@@ -119,6 +124,14 @@ class Config extends \Magento\Framework\View\Element\Template
         $transaction['order_complete_qrcredit'] = $this->checkoutRegistry->registry('order_complete_qrcredit');
         $transaction['order_id_qrcredit'] = $this->checkoutRegistry->registry('order_id_qrcredit');
         $transaction['key_id_qrcredit'] = $this->checkoutRegistry->registry('key_id_qrcredit');
+        return $transaction;
+    }
+
+    public function getTransactionQrwechat() {
+        $transaction['order_generate_qrwechat'] = $this->checkoutRegistry->registry('order_generate_qrwechat');
+        $transaction['order_complete_qrwechat'] = $this->checkoutRegistry->registry('order_complete_qrwechat');
+        $transaction['order_id_qrwechat'] = $this->checkoutRegistry->registry('order_id_qrwechat');
+        $transaction['key_id_qrwechat'] = $this->checkoutRegistry->registry('key_id_qrwechat');
         return $transaction;
     }
 

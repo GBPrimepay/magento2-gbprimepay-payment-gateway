@@ -476,6 +476,15 @@ $itemdetail = 'Charge for order ' . $_incrementId;
 $itemReferenceId = ''.substr(time(), 4, 5).'00'.$_orderId;
 $itemformkey = $generateitem['merchantDefined4'];
 $itemcustomerEmail = $order->getCustomerEmail();
+$itemcustomerAddress = '';
+$itemcustomerAddress .= '' . $customer_full_name .' ';
+$itemcustomerAddress .= '' . $order->getBillingAddress()->getData('company') .' ';
+$itemcustomerAddress .= '' . (count($order->getBillingAddress()->getStreet())>0) ? $order->getBillingAddress()->getStreet()[0] : '' .' ';
+$itemcustomerAddress .= '' . (count($order->getBillingAddress()->getStreet())>1) ? $order->getBillingAddress()->getStreet()[1] : '' .' ';
+$itemcustomerAddress .= '' . $order->getBillingAddress()->getData('city') .' ';
+$itemcustomerAddress .= '' . $order->getBillingAddress()->getData('region') .' ';
+$itemcustomerAddress .= '' . $order->getBillingAddress()->getData('postcode') .'';
+$itemcustomerTelephone = '' . $order->getBillingAddress()->getTelephone();
 $itemmagento_customer_id = $payment->getOrder()->getCustomerId();
 $otpCode = 'Y';
 $otpResponseUrl = $this->_config->getresponseUrl('response_direct').'form_key/'.$transaction_form;
@@ -487,7 +496,7 @@ if ($this->_config->getEnvironment() === 'prelive') {
     $url = Constant::URL_CHARGE_LIVE;
 }
 
-$field = "{\r\n\"amount\": $itemamount,\r\n\"referenceNo\": \"$itemReferenceId\",\r\n\"detail\": \"$itemdetail\",\r\n\"customerName\": \"$customer_full_name\",\r\n\"customerEmail\": \"$itemcustomerEmail\",\r\n\"merchantDefined1\": \"$callgenerateID\",\r\n\"merchantDefined2\": null,\r\n\"merchantDefined3\": \"$itemReferenceId\",\r\n\"merchantDefined4\": \"$itemformkey\",\r\n\"merchantDefined5\": null,\r\n\"card\": {\r\n\"token\": \"$gbprimepayCardId\"\r\n},\r\n\"otp\": \"$otpCode\",\r\n\"responseUrl\": \"$otpResponseUrl\",\r\n\"backgroundUrl\": \"$otpBackgroundUrl\"\r\n}\r\n";
+$field = "{\r\n\"amount\": $itemamount,\r\n\"referenceNo\": \"$itemReferenceId\",\r\n\"detail\": \"$itemdetail\",\r\n\"customerName\": \"$customer_full_name\",\r\n\"customerEmail\": \"$itemcustomerEmail\",\r\n\"customerAddress\": \"$itemcustomerAddress\",\r\n\"customerTelephone\": \"$itemcustomerTelephone\",\r\n\"merchantDefined1\": \"$callgenerateID\",\r\n\"merchantDefined2\": null,\r\n\"merchantDefined3\": \"$itemReferenceId\",\r\n\"merchantDefined4\": \"$itemformkey\",\r\n\"merchantDefined5\": null,\r\n\"card\": {\r\n\"token\": \"$gbprimepayCardId\"\r\n},\r\n\"otp\": \"$otpCode\",\r\n\"responseUrl\": \"$otpResponseUrl\",\r\n\"backgroundUrl\": \"$otpBackgroundUrl\"\r\n}\r\n";
 
 
 $callback = $this->_config->sendCHARGECurl("$url", $field, 'POST');
@@ -511,6 +520,8 @@ $item = array(
     "detail" => $itemdetail,
     "customerName" => $customer_full_name,
     "customerEmail" => $itemcustomerEmail,
+    "customerAddress" => $itemcustomerAddress,
+    "customerTelephone" => $itemcustomerTelephone,
     "merchantDefined1" => $callgenerateID,
     "merchantDefined2" => null,
     "merchantDefined3" => $itemReferenceId,
@@ -588,6 +599,8 @@ $itemamount = number_format((($amount * 100)/100), 2, '.', '');
 $itemdetail = 'Charge for order ' . $order->getEntityId();
 $itemReferenceId = ''.substr(time(), 4, 5).'00'.$order->getIncrementId();
 $itemcustomerEmail = $order->getCustomerEmail();
+$itemcustomerAddress = '' . str_replace("<br/>", " ", $order->getBillingAddress());
+$itemcustomerTelephone = '' . $order->getBillingAddress()->getTelephone();
 $itemmagento_customer_id = $payment->getOrder()->getCustomerId();
 $otpCode = 'Y';
 $otpResponseUrl = $this->_config->getresponseUrl('response_direct');
@@ -599,7 +612,7 @@ if ($this->_config->getEnvironment() === 'prelive') {
     $url = Constant::URL_CHARGE_LIVE;
 }
 
-$field = "{\r\n\"amount\": $itemamount,\r\n\"referenceNo\": \"$itemReferenceId\",\r\n\"detail\": \"$itemdetail\",\r\n\"customerName\": \"$customer_full_name\",\r\n\"customerEmail\": \"$itemcustomerEmail\",\r\n\"merchantDefined1\": \"$callgenerateID\",\r\n\"merchantDefined2\": null,\r\n\"merchantDefined3\": \"$itemReferenceId\",\r\n\"merchantDefined4\": null,\r\n\"merchantDefined5\": null,\r\n\"card\": {\r\n\"token\": \"$gbprimepayCardId\"\r\n},\r\n\"otp\": \"$otpCode\",\r\n\"responseUrl\": \"$otpResponseUrl\",\r\n\"backgroundUrl\": \"$otpBackgroundUrl\"\r\n}\r\n";
+$field = "{\r\n\"amount\": $itemamount,\r\n\"referenceNo\": \"$itemReferenceId\",\r\n\"detail\": \"$itemdetail\",\r\n\"customerName\": \"$customer_full_name\",\r\n\"customerEmail\": \"$itemcustomerEmail\",\r\n\"customerAddress\": \"$itemcustomerAddress\",\r\n\"customerTelephone\": \"$itemcustomerTelephone\",\r\n\"merchantDefined1\": \"$callgenerateID\",\r\n\"merchantDefined2\": null,\r\n\"merchantDefined3\": \"$itemReferenceId\",\r\n\"merchantDefined4\": null,\r\n\"merchantDefined5\": null,\r\n\"card\": {\r\n\"token\": \"$gbprimepayCardId\"\r\n},\r\n\"otp\": \"$otpCode\",\r\n\"responseUrl\": \"$otpResponseUrl\",\r\n\"backgroundUrl\": \"$otpBackgroundUrl\"\r\n}\r\n";
 
 $callback = $this->_config->sendCHARGECurl("$url", $field, 'POST');
 
@@ -628,6 +641,8 @@ $item = array(
     "detail" => $itemdetail,
     "customerName" => $customer_full_name,
     "customerEmail" => $itemcustomerEmail,
+    "customerAddress" => $itemcustomerAddress,
+    "customerTelephone" => $itemcustomerTelephone,
     "merchantDefined1" => $callgenerateID,
     "merchantDefined2" => null,
     "merchantDefined3" => $itemReferenceId,

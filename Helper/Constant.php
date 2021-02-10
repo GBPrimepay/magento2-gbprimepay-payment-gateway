@@ -29,6 +29,9 @@ class Constant
     const URL_QRCREDIT_TEST = 'https://api.globalprimepay.com/gbp/gateway/qrcredit';
     const URL_QRCREDIT_LIVE = 'https://api.gbprimepay.com/gbp/gateway/qrcredit';
 
+    const URL_QRWECHAT_TEST = 'https://api.globalprimepay.com/gbp/gateway/wechat';
+    const URL_QRWECHAT_LIVE = 'https://api.gbprimepay.com/gbp/gateway/wechat';
+
     const URL_BARCODE_TEST = 'https://api.globalprimepay.com/gbp/gateway/barcode';
     const URL_BARCODE_LIVE = 'https://api.gbprimepay.com/gbp/gateway/barcode';
 

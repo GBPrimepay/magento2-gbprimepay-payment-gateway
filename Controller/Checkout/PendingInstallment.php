@@ -15,6 +15,7 @@ use Magento\Framework\App\Area;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Csp\Api\CspAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
+use Magento\Checkout\Model\Session;
 use Magento\Framework\App\State as AppState;
 use Magento\Framework\Data\Form\FormKey\Validator as FormKeyValidator;
 use Magento\Framework\Controller\Result\RedirectFactory;
@@ -34,7 +35,8 @@ class PendingInstallment extends \GBPrimePay\Payments\Controller\Checkout implem
    */
   public function execute()
   {
-      $postData = $_POST;
+      // $postData = $_POST;
+      $postData = $this->getRequest()->getParams();
       if(isset($postData['resultCode'])){
         $referenceNo = $postData['referenceNo'];
         $_orderId = substr($postData['referenceNo'], 7);
@@ -45,19 +47,30 @@ class PendingInstallment extends \GBPrimePay\Payments\Controller\Checkout implem
         $order = $this->getQuoteByOrderId($orderId); 
         $_getCustomerId = $order->getCustomerId();
         $payment = $order->getPayment();
-        $transaction_form = $payment->getAdditionalInformation("transaction_form");
+        $transaction_form_additional = $payment->getAdditionalInformation("transaction_form");
       if ($postData['resultCode']) {
             $isLogin = $this->customerSession->isLoggedIn();
             if ($isLogin) {
             }else{
               if(!empty($_getCustomerId)){
-                $transaction_form = $this->reloadCustomerId($payment, $_getCustomerId, $transaction_form);
+                $transaction_form = $this->reloadCustomerId($payment, $_getCustomerId, $transaction_form_additional);
               }
             }
             if ($postData['resultCode'] === '00') {
               if ($orderId) {
                 $_getOrderCompleteStatus = $this->getOrderCompleteStatus($orderId);
                 if($_getOrderCompleteStatus != 0){
+                            
+                    $this->checkoutSession->setLastQuoteId($order->getQuoteId());
+                    $this->checkoutSession->setLastOrderId($order->getId());
+                    $this->checkoutSession->setLastRealOrderId($order->getIncrementId());
+                    $this->checkoutSession->setLastOrderStatus(\Magento\Sales\Model\Order::STATE_PROCESSING);
+                    $this->checkoutSession->setLastQuoteId($order->getQuoteId())->setLastSuccessQuoteId($order->getQuoteId());
+                    
+                    if(empty($transaction_form)){
+                      $transaction_form = $transaction_form_additional;
+                    }
+
                     $this->checkoutRegistry->register('referenceNo', $postData['referenceNo'], false);
                     $this->checkoutRegistry->register('gbpReferenceNo', $postData['gbpReferenceNo'], false);
                     $this->checkoutRegistry->register('amount', $postData['amount'], false);
@@ -68,6 +81,9 @@ class PendingInstallment extends \GBPrimePay\Payments\Controller\Checkout implem
               }
             }else{
                   if ($orderId) {
+                    if(empty($transaction_form)){
+                      $transaction_form = $transaction_form_additional;
+                    }
                     $order_note = "Payment Failure, Transaction cannot be authorized";
                     $this->failureOrder($orderId, "canceled", $order_note);                   
                     $this->checkoutRegistry->register('referenceNo', $postData['referenceNo'], false);

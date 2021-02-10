@@ -49,6 +49,14 @@
     <virtualType name="GBPrimePay\Payments\Model\ConfigProvider" type="Magento\Payment\Model\CcGenericConfigProvider">
         <arguments>
             <argument name="methodCodes" xsi:type="array">
+                <item name="gbprimepay_qrwechat" xsi:type="const">GBPrimePay\Payments\Model\GBPrimePayQrwechat::CODE</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="GBPrimePay\Payments\Model\ConfigProvider" type="Magento\Payment\Model\CcGenericConfigProvider">
+        <arguments>
+            <argument name="methodCodes" xsi:type="array">
                 <item name="gbprimepay_barcode" xsi:type="const">GBPrimePay\Payments\Model\GBPrimePayBarcode::CODE</item>
             </argument>
         </arguments>

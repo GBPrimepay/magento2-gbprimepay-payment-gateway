@@ -51,11 +51,18 @@
               <sort_order>40</sort_order>
               <model>GBPrimePay\Payments\Model\GBPrimePayQrcredit</model>
           </gbprimepay_qrcredit>
+          <gbprimepay_qrwechat>
+              <instructions>QR Wechat</instructions>
+              <active>0</active>
+              <title>Pay with QR Wechat</title>
+              <sort_order>50</sort_order>
+              <model>GBPrimePay\Payments\Model\GBPrimePayQrwechat</model>
+          </gbprimepay_qrwechat>
           <gbprimepay_barcode>
               <instructions>Bill Payment</instructions>
               <active>0</active>
               <title>Pay with Bill Payment</title>
-              <sort_order>50</sort_order>
+              <sort_order>60</sort_order>
               <model>GBPrimePay\Payments\Model\GBPrimePayBarcode</model>
           </gbprimepay_barcode>
       </gbprimepay>
@@ -91,11 +98,18 @@
               <sort_order>40</sort_order>
               <model>GBPrimePay\Payments\Model\GBPrimePayQrcredit</model>
           </gbprimepay_qrcredit>
+          <gbprimepay_qrwechat>
+              <instructions></instructions>
+              <active>1</active>
+              <title>Pay with QR Wechat</title>
+              <sort_order>50</sort_order>
+              <model>GBPrimePay\Payments\Model\GBPrimePayQrwechat</model>
+          </gbprimepay_qrwechat>
           <gbprimepay_barcode>
               <instructions></instructions>
               <active>1</active>
               <title>Pay with Bill Payment</title>
-              <sort_order>50</sort_order>
+              <sort_order>60</sort_order>
               <model>GBPrimePay\Payments\Model\GBPrimePayBarcode</model>
           </gbprimepay_barcode>
         </payment>

@@ -124,6 +124,30 @@
                 });
             });
 
+            $('#active_callback_qrwechat_transaction_button').click(function () {
+                var url = '<?php echo $block->getUrl('gbprimepay/system_config/activeCallbackQrwechat'); ?>';
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    showLoader: true,
+                    success: function (response) {
+                        var result_token = $('#auth_token_result_active_callback_qrwechat_transaction_button');
+                        if (response.success) {
+                            $("button#active_callback_qrwechat_transaction_button span#span-for-active-button").html("GBPrimePay QR Visa : Active");
+                            $('button#active_callback_qrwechat_transaction_button button.action-validate-get-auth-token.gbprimepay-button-callback').addClass("callback-actived");
+                            result_token.removeClass('hide').addClass('success');
+                            result_token.html(response.message);
+                        }
+                        if (response.error) {
+                            $("button#active_callback_qrwechat_transaction_button span#span-for-active-button").html("GBPrimePay QR Visa : Error");
+                            result_token.removeClass('hide').addClass('error');
+                            result_token.html(response.message);
+                        }
+                    }
+                });
+            });
+
             $('#active_callback_barcode_transaction_button').click(function () {
                     var url = '<?php echo $block->getUrl('gbprimepay/system_config/activeCallbackQrcode'); ?>';
 

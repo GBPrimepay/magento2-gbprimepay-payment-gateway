@@ -1,0 +1,102 @@
+<?php
+/**
+ * GBPrimePay_Payments extension
+ * @package GBPrimePay_Payments
+ * @copyright Copyright (c) 2020 GBPrimePay Payments (https://gbprimepay.com/)
+ */
+// @codingStandardsIgnoreFile
+/** @var \GBPrimePay\Payments\Block\Checkout\View\PendingQrwechat $block */
+$configData = $block->getConfigData();
+$isEnableSave = $configData->getIsSave();
+$cards = $block->getDataCard();
+$customerId = $block->customerSession->getCustomerId() ? '1' : '0';
+$baseUrl = $block->getBaseUrl();
+$assignQrwechat = $block->getUrl("gbprimepay/checkout/eventsassignqrwechat");
+$responseQrwechat = $block->getUrl("gbprimepay/checkout/responseqrwechat");
+$transaction = $block->getTransactionQrwechat();
+$transaction_id = $block->getTransactionID();
+$transaction_key = $block->getTransactionKEY();
+$_transactionId = $this->getRequest()->getParam('key');
+$_orderId = $this->getRequest()->getParam('id');
+$_form_key = $transaction['key_id_qrwechat'];
+$returnUrlQrwechat = $configData->getresponseUrl('response_qrwechat').'form_key/'.$_form_key;
+
+$returnUrlQrwechat = $configData->getresponseUrl('response_qrwechat');
+$img_checked = $configData->getImageURLs('checked');
+$img_logopay = $configData->getImageURLs('logopay');
+
+if($transaction['order_complete_qrwechat'] != 0){
+    echo $block->getFormKey();
+    echo '<div class="qrwechat_display" id="gbprimepay-qrwechat-payment-successful" style="display:block;">';
+    echo '<center><br><br>';
+    echo '<img src="' . $img_checked . '" style="padding:0px 0px 0px 0px;windth:100%;">';
+    echo '<h3>GBPrimePay QR Wechat Payment Successful!</h3>';
+    echo '<img src="' . $img_logopay . '" style="padding:0px 0px 0px 0px;windth:100%;">';
+    echo '<br><br><br>';
+    echo 'Pay with QR Wechat Payment has been received and "Order is Now Complete".';
+    echo '<br><br><br>';
+    echo 'Redirecting...';
+    echo '<br><br><br><br><br><br>';
+    echo '</center>';
+    echo '</div>';
+?>
+<script>
+require([
+    'jquery',
+    'prototype',
+    'domReady!'
+], function ($, domReady) {
+    'use strict';
+    setInterval(function(){get_return_url($);},10000);
+});
+function get_return_url($){
+window.location.href = '<?php echo $returnUrlQrwechat; ?>';
+}
+</script>
+<?php
+}else{
+    echo '<div class="qrwechat_display" id="gbprimepay-qrwechat-waiting-payment" style="display:block;">';
+    echo '<center>';
+    echo '<img src="' . $transaction['order_generate_qrwechat'] . '"  style="padding:0px 0px 0px 0px;width:100%;max-width:300px;"/>';
+    echo '<br><br>';
+    echo '</center>';
+    echo '</div>';
+?>
+<script>
+require([
+    'jquery',
+    'prototype',
+    'domReady!'
+], function ($, domReady) {
+    'use strict';
+    get_ajax_transaction($);
+    setInterval(function(){get_ajax_transaction($);},7000);
+});
+function get_ajax_transaction($){
+var urlresponseQrwechat = '<?php echo $responseQrwechat; ?>';
+var idQrwechat = '<?php echo $_orderId; ?>';
+var keyQrwechat = '<?php echo $_transactionId; ?>';
+$.ajax({
+    type: 'POST',
+    url: urlresponseQrwechat,
+    dataType: "json",
+    cache: false,
+    data: {
+        id: idQrwechat,
+        key: keyQrwechat
+    },
+    success: function (response) {
+        if (response.success) {
+            if(response.gbp_reference_no && response.gbp_reference_no * 1){
+                    var $orderFormkey = $("input[name='form_key']").val();  
+                    window.location.replace(window.location.pathname + '/form_key/' + $orderFormkey);
+                    window.console.log(response.gbp_reference_no);
+            }
+        }
+    }
+});
+}
+</script>
+<?php
+}
+?>

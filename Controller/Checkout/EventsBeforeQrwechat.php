@@ -10,7 +10,8 @@ namespace GBPrimePay\Payments\Controller\Checkout;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\App\Action\Action;
 
-class EventsBeforeDirect extends \GBPrimePay\Payments\Controller\Checkout
+
+class EventsBeforeQrwechat extends \GBPrimePay\Payments\Controller\Checkout
   {
 
       /**
@@ -22,45 +23,31 @@ class EventsBeforeDirect extends \GBPrimePay\Payments\Controller\Checkout
       public function execute()
       {
           try {
-
-              $this->_eventManager->dispatch('gbprimepay_before_direct');
-              $_gbpmethod_id = $this->_config->getGBPMethod('GBPMethod');
-              $selected = $this->_config->setGBPMethod('selected_direct');
-              $payment = \Magento\Framework\App\ObjectManager::getInstance();
-              $order = $payment->get('\Magento\Checkout\Model\Cart');
-              $amount = $order->getQuote()->getBaseGrandTotal();
-              $itemamount = number_format((($amount * 100)/100), 2, '.', '');
+              $this->_eventManager->dispatch('gbprimepay_before_qrwechat');
+              $selected = $this->_config->setGBPMethod('selected_qrwechat');
               
               $_transaction_id = $this->_config->getGBPTransactionID();
               $_transaction_key = $this->_config->getGBPTransactionKEY();
               $_form_key = $this->_config->getGBPFormKEY();
-              $_transaction_amt = $this->_config->getGBPTransactionAMT();
               $isLogin = $this->customerSession->isLoggedIn();
               if ($isLogin) {
+              $currentdate = date('Y-m-d H:i');
               $purchase = array(
                   "id_customer" => $this->customerSession->getCustomerId(),
                   "quoteid" => $_transaction_id,
-                  "method" => 'gbprimepay_direct',
-                  "status" => 'inactive'
+                  "method" => 'gbprimepay_qrwechat',
+                  "status" => 'active'
               );
-              if($_gbpmethod_id=='selected_installment'){
-                $save_purchase = $this->gbprimepayInstallment->_purchaseDataInactive($purchase);
-              }else if($_gbpmethod_id=='selected_qrcode'){
-                $save_purchase = $this->gbprimepayQrcode->_purchaseDataInactive($purchase);
-              }else if($_gbpmethod_id=='selected_qrcredit'){
-                $save_purchase = $this->gbprimepayQrcredit->_purchaseDataInactive($purchase);
-              }else if($_gbpmethod_id=='selected_qrwechat'){
-                $save_purchase = $this->gbprimepayQrwechat->_purchaseDataInactive($purchase);
-              }else{
-                $save_purchase = $this->gbprimepayBarcode->_purchaseDataInactive($purchase);              
+              $save_purchase = $this->gbprimepayQrwechat->_purchaseData($purchase);
               }
-              }
+
+
               return $this->jsonFactory->create()->setData([
                   'success' => true,
                   'transaction_id' => $_transaction_id,
                   'transaction_key' => $_transaction_key,
                   'form_key' => $_form_key,
-                  'selected' => 'selected_direct'
+                  'selected' => 'selected_qrwechat'
               ]);
 
 

@@ -32,6 +32,10 @@ define(
                 component: 'GBPrimePay_Payments/js/view/payment/method-renderer/gbprimepay-qrcredit'
             },
             {
+                type: 'gbprimepay_qrwechat',
+                component: 'GBPrimePay_Payments/js/view/payment/method-renderer/gbprimepay-qrwechat'
+            },
+            {
                 type: 'gbprimepay_barcode',
                 component: 'GBPrimePay_Payments/js/view/payment/method-renderer/gbprimepay-barcode'
             }

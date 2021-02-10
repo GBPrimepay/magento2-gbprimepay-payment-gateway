@@ -49,7 +49,7 @@ define(
                     selectedCard: 0,
                     newSavedCards: []
                 });
-                var self = this;
+                var self = this;               
 
                 var mappedCard = $.map(this.savedCards, function (savedCard) {
                     var itemObj = new card(savedCard);
@@ -61,7 +61,9 @@ define(
                 this.selectedCard.subscribe(function (value) {
                     var intValue = parseInt(value);
                     self.isFormVisible(!intValue);
-                });
+                }); 
+                
+				this.selectPaymentMethod();
 
                 return this;
             },

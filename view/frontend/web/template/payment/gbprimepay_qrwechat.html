@@ -1,0 +1,91 @@
+<!--
+/**
+ * Copyright © 2020 GBPrimePay Payments.
+ */
+-->
+<style>
+.payment-method {
+  border-bottom: 1px solid #cccccc;
+}
+.payment-method:last-child {
+  border-bottom: 0px solid #cccccc;
+}
+</style>
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+    <div class="payment-method-title field choice">
+        <input type="radio"
+               name="payment[method]"
+               class="radio"
+               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+        <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitleQrwechat()"></span></label>
+    </div>
+    <div class="payment-method-content">
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+        <div class="payment-method-billing-address">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <div class="field type">
+            <div class="control">
+    
+    
+                        <img data-bind="attr: { src: getLogoQrwechat() }"  style="padding:0px 0px 0px 0px;" />
+    
+    
+            </div>
+        </div>
+
+
+        <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
+          <div class="field type" style="display:none;">
+              <div class="control">
+                  <input type="text"
+                         name="payment[transaction_id]"
+                         class="input-text"
+                         value=""
+                         data-bind="attr: {id: getCode() + '_transaction_id', 'data-container': getCode() + '-transaction-id'},
+                         value: getTransactionID()
+                         ">
+              </div>
+          </div>
+          <div class="field type" style="display:none;">
+            <div class="control">
+                <input type="text"
+                       name="payment[transaction_key]"
+                       class="input-text"
+                       value=""
+                       data-bind="attr: {id: getCode() + '_transaction_key', 'data-container': getCode() + '-transaction-key'},
+                       value: getTransactionKEY()
+                       ">
+            </div>
+        </div>
+          <input data-bind='attr: {value: getFormKey()}' type="hidden" name="form_key"/>
+        </form>
+
+        <p data-bind="html: getInstructionQrwechat()"></p>
+        <div class="actions-toolbar">
+            <div class="primary">
+                <button class="action primary checkout"
+                        type="submit"
+                        data-bind="
+                        click: placeOrder,
+                        attr: {title: $t('Place Order')},
+                        enable: (getCode() == isChecked()),
+                        css: {disabled: !isPlaceOrderActionAllowed()}
+                        "
+                        disabled>
+                    <span data-bind="text: 'Continue to Payment'">Continue to Payment</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

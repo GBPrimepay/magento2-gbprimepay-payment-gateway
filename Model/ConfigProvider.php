@@ -10,6 +10,7 @@ namespace GBPrimePay\Payments\Model;
 use GBPrimePay\Payments\Model\GBPrimePayInstallment;
 use GBPrimePay\Payments\Model\GBPrimePayQrcode;
 use GBPrimePay\Payments\Model\GBPrimePayQrcredit;
+use GBPrimePay\Payments\Model\GBPrimePayQrwechat;
 use GBPrimePay\Payments\Model\GBPrimePayBarcode;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Framework\Escaper;
@@ -22,6 +23,7 @@ class ConfigProvider implements ConfigProviderInterface
         GBPrimePayInstallment::CODE,
         GBPrimePayQrcode::CODE,
         GBPrimePayQrcredit::CODE,
+        GBPrimePayQrwechat::CODE,
         GBPrimePayBarcode::CODE
     ];
 

@@ -25,6 +25,7 @@
             <include path="GBPrimePay_Payments::system/gbprimepay_installment.xml"/>
             <include path="GBPrimePay_Payments::system/gbprimepay_qrcode.xml"/>
             <include path="GBPrimePay_Payments::system/gbprimepay_qrcredit.xml"/>
+            <include path="GBPrimePay_Payments::system/gbprimepay_qrwechat.xml"/>
             <include path="GBPrimePay_Payments::system/gbprimepay_barcode.xml"/>
 
     </section>

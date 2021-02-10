@@ -25,6 +25,9 @@ class CsrfValidatorSkip {
         if ($request->getModuleName() == 'gbprimepay') {
             return;
         }
+        if (strpos($request->getOriginalPathInfo(), '/gbprimepay/checkout') !== false) {
+            return;
+        }
         if ($request->getControllerModule() == self::CONTROLLER_MODULE
             && $request->getControllerName() == self::CONTROLLER_NAME) {
             return;

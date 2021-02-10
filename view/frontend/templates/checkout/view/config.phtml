@@ -33,6 +33,11 @@ $assignQrcredit = $block->getUrl("gbprimepay/checkout/eventsassignqrcredit");
 $responseQrcredit = $block->getUrl("gbprimepay/checkout/responseqrcredit");
 $generateQrcredit = $block->getGenerateQrcredit();
 
+$beforeQrwechat = $block->getUrl("gbprimepay/checkout/eventsbeforeqrwechat");
+$assignQrwechat = $block->getUrl("gbprimepay/checkout/eventsassignqrwechat");
+$responseQrwechat = $block->getUrl("gbprimepay/checkout/responseqrwechat");
+$generateQrwechat = $block->getGenerateQrwechat();
+
 $beforeBarcode = $block->getUrl("gbprimepay/checkout/eventsbeforebarcode");
 $assignBarcode = $block->getUrl("gbprimepay/checkout/eventsassignbarcode");
 $responseBarcode = $block->getUrl("gbprimepay/checkout/responsebarcode");
@@ -85,6 +90,14 @@ ksort($countrySel);
     window.gbprimepay.titleQrcredit = '<?php echo $configData->getTitleQrcredit(); ?>';
     window.gbprimepay.instructionQrcredit = '<?php echo $configData->getInstructionQrcredit(); ?>';
     window.gbprimepay.generateQrcredit = '<?php echo $generateQrcredit; ?>';
+
+    window.gbprimepay.beforeQrwechat = '<?php echo $beforeQrwechat; ?>';
+    window.gbprimepay.assignQrwechat = '<?php echo $assignQrwechat; ?>';
+    window.gbprimepay.responseQrwechat = '<?php echo $responseQrwechat; ?>';
+    window.gbprimepay.logoQrwechat = '<?php echo $configData->getLogoQrwechat(); ?>';
+    window.gbprimepay.titleQrwechat = '<?php echo $configData->getTitleQrwechat(); ?>';
+    window.gbprimepay.instructionQrwechat = '<?php echo $configData->getInstructionQrwechat(); ?>';
+    window.gbprimepay.generateQrwechat = '<?php echo $generateQrwechat; ?>';
 
     window.gbprimepay.beforeBarcode = '<?php echo $beforeBarcode; ?>';
     window.gbprimepay.assignBarcode = '<?php echo $assignBarcode; ?>';

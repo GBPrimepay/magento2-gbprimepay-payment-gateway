@@ -21,6 +21,10 @@
         <observer name="gbprimepay_payments_model_observer_requestbeforeqrcredit"
             instance="GBPrimePay\Payments\Model\Observer\RequestBeforeQrcredit"/>
     </event>
+    <event name="gbprimepay_before_qrwechat">
+        <observer name="gbprimepay_payments_model_observer_requestbeforeqrwechat"
+            instance="GBPrimePay\Payments\Model\Observer\RequestBeforeQrwechat"/>
+    </event>
     <event name="gbprimepay_before_barcode">
         <observer name="gbprimepay_payments_model_observer_requestbeforebarcode"
             instance="GBPrimePay\Payments\Model\Observer\RequestBeforeBarcode"/>

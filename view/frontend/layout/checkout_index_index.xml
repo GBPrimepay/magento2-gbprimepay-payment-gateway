@@ -41,6 +41,9 @@
                                                                         <item name="gbprimepay_qrcredit" xsi:type="array">
                                                                         </item>
 
+                                                                        <item name="gbprimepay_qrwechat" xsi:type="array">
+                                                                        </item>
+
                                                                         <item name="gbprimepay_barcode" xsi:type="array">
                                                                         </item>
 

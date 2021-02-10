@@ -54,6 +54,9 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
         if($images=='qrcredit'){
             $images = $this->_assetRepo->getUrl("GBPrimePay_Payments::images/qrvisa.png");
         }
+        if($images=='qrwechat'){
+            $images = $this->_assetRepo->getUrl("GBPrimePay_Payments::images/qrwechat.png");
+        }
         if($images=='barcode'){
             $images = $this->_assetRepo->getUrl("GBPrimePay_Payments::images/barcode.png");
         }
@@ -585,6 +588,8 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
             $itemdetail = 'Charge for order ' . $_incrementId;
             $itemReferenceId = ''.substr(time(), 4, 5).'00'.$_orderId;
             $itemcustomerEmail = $order->getCustomerEmail();
+            $itemcustomerAddress = '' . str_replace("<br/>", " ", $order->getQuote()->getBillingAddress());
+            $itemcustomerTelephone = '' . $order->getQuote()->getBillingAddress()->getTelephone();
             $itemmagento_customer_id = $payment->getOrder()->getCustomerId();
             $otpCode = 'Y';
             $otpResponseUrl = $this->_config->getresponseUrl('response_direct');
@@ -596,7 +601,7 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
                 $url = Constant::URL_CHARGE_LIVE;
             }
             
-            $field = "{\r\n\"amount\": $itemamount,\r\n\"referenceNo\": \"$itemReferenceId\",\r\n\"detail\": \"$itemdetail\",\r\n\"customerName\": \"$customer_full_name\",\r\n\"customerEmail\": \"$itemcustomerEmail\",\r\n\"merchantDefined1\": \"$callgenerateID\",\r\n\"merchantDefined2\": null,\r\n\"merchantDefined3\": \"$itemReferenceId\",\r\n\"merchantDefined4\": null,\r\n\"merchantDefined5\": null,\r\n\"card\": {\r\n\"token\": \"$gbprimepayCardId\"\r\n},\r\n\"otp\": \"$otpCode\",\r\n\"responseUrl\": \"$otpResponseUrl\",\r\n\"backgroundUrl\": \"$otpBackgroundUrl\"\r\n}\r\n";
+            $field = "{\r\n\"amount\": $itemamount,\r\n\"referenceNo\": \"$itemReferenceId\",\r\n\"detail\": \"$itemdetail\",\r\n\"customerName\": \"$customer_full_name\",\r\n\"customerEmail\": \"$itemcustomerEmail\",\r\n\"customerAddress\": \"$itemcustomerAddress\",\r\n\"customerTelephone\": \"$itemcustomerTelephone\",\r\n\"merchantDefined1\": \"$callgenerateID\",\r\n\"merchantDefined2\": null,\r\n\"merchantDefined3\": \"$itemReferenceId\",\r\n\"merchantDefined4\": null,\r\n\"merchantDefined5\": null,\r\n\"card\": {\r\n\"token\": \"$gbprimepayCardId\"\r\n},\r\n\"otp\": \"$otpCode\",\r\n\"responseUrl\": \"$otpResponseUrl\",\r\n\"backgroundUrl\": \"$otpBackgroundUrl\"\r\n}\r\n";
             
             if ($this->_config->getCanDebug()) {
                 $this->gbprimepayLogger->addDebug("Debug field //" . print_r($field, true));
@@ -629,6 +634,8 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
                 "detail" => $itemdetail,
                 "customerName" => $customer_full_name,
                 "customerEmail" => $itemcustomerEmail,
+                "customerAddress" => $itemcustomerAddress,
+                "customerTelephone" => $itemcustomerTelephone,
                 "merchantDefined1" => $callgenerateID,
                 "merchantDefined2" => null,
                 "merchantDefined3" => $itemReferenceId,
@@ -705,6 +712,12 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
         if($routeurl=='background_qrcredit'){
         $routeurl = $this->_urlBuilder->getUrl("gbprimepay/checkout/afterplaceqrcreditorder");
         }
+        if($routeurl=='response_qrwechat'){
+        $routeurl = $this->_urlBuilder->getUrl("checkout/onepage/success");
+        }
+        if($routeurl=='background_qrwechat'){
+        $routeurl = $this->_urlBuilder->getUrl("gbprimepay/checkout/afterplaceqrwechatorder");
+        }
         if($routeurl=='response_barcode'){
           $routeurl = $this->_urlBuilder->getUrl("checkout/onepage/success");
         }
@@ -744,6 +757,13 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
         ));
     }
 
+    public function getInstructionQrwechat()
+    {
+        return preg_replace('/\s+|\n+|\r/', ' ', $this->scopeConfig->getValue(
+            'gbprimepay/gbprimepay_qrwechat/instructions'
+        ));
+    }
+
     public function getInstructionBarcode()
     {
         return preg_replace('/\s+|\n+|\r/', ' ', $this->scopeConfig->getValue(
@@ -774,6 +794,11 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
         $images = $this->_assetRepo->getUrl("GBPrimePay_Payments::images/qrvisa.png");
         return $images;
     }
+    public function getLogoQrwechat()
+    {
+        $images = $this->_assetRepo->getUrl("GBPrimePay_Payments::images/qrwechat.png");
+        return $images;
+    }
     public function getLogoBarcode()
     {
         $images = $this->_assetRepo->getUrl("GBPrimePay_Payments::images/barcode.png");
@@ -798,6 +823,13 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return preg_replace('/\s+|\n+|\r/', ' ', $this->scopeConfig->getValue(
             'gbprimepay/gbprimepay_qrcredit/title'
+        ));
+    }
+
+    public function getTitleQrwechat()
+    {
+        return preg_replace('/\s+|\n+|\r/', ' ', $this->scopeConfig->getValue(
+            'gbprimepay/gbprimepay_qrwechat/title'
         ));
     }
 
@@ -929,6 +961,13 @@ class ConfigHelper extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->scopeConfig->getValue(
             'payment/gbprimepay_qrcredit/active'
+        );
+    }
+
+    public function getActiveQrwechat()
+    {
+        return $this->scopeConfig->getValue(
+            'payment/gbprimepay_qrwechat/active'
         );
     }
 
